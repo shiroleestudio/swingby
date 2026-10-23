@@ -24,6 +24,9 @@ declare const __APP_VERSION__: string;
 export type Screen = 'title' | 'select' | 'play';
 export type InfinityMode = 'daily' | 'random' | 'code';
 
+/** 개인정보처리방침은 스튜디오 허브 한 곳에만 둔다 — 판(itch·웹·앱)별 광고 차이도 거기서 나눠 적는다 */
+const PRIVACY_URL = 'https://shiroleestudio.github.io/privacy/swingby/';
+
 const $ = (id: string): HTMLElement => {
   const el = document.getElementById(id);
   if (!el) throw new Error(`#${id} 를 찾을 수 없습니다`);
@@ -352,7 +355,7 @@ export class Screens {
               + `<button class="btn" data-a="noads" type="button">${t('set.buy')}</button></div>`
             : ''}
         <div class="row2"><span class="label">${t('set.privacy')}</span>
-          <a class="btn" href="./privacy/" target="_blank" rel="noopener">${t('set.view')}</a></div>
+          <a class="btn" href="${PRIVACY_URL}" target="_blank" rel="noopener">${t('set.view')}</a></div>
         <div class="row2"><span class="label">${t('set.credits')}</span>
           <span class="val dim">${t('set.oss')}</span></div>
         <p class="tapnote">${t('set.ossNote')}</p>

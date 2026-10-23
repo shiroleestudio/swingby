@@ -13,7 +13,7 @@ Claude Code 가 초안을 만들고 사용자가 확인한다.
 | `screenshots.md` | 스크린샷 구성안 5장 | ✅ |
 | `data-safety.md` | 데이터 보안·개인정보 라벨 메모 | ✅ |
 | `tester-guide.md` | 비공개 테스터 안내문 | ✅ |
-| `../public/privacy/index.html` | 개인정보처리방침 (Pages 에 함께 올라간다) | ✅ 문의처 shiroleestudio@gmail.com |
+| 개인정보처리방침 | 스튜디오 허브 `https://shiroleestudio.github.io/privacy/swingby/` 에 판별(itch·웹 포털·앱)로 둔다. 게임 설정의 링크가 이곳을 연다. 2026-10-23 부터 저장소 사본 없음 | ✅ 문의처 shiroleestudio@gmail.com |
 
 ## 사용자가 해야 하는 것
 
