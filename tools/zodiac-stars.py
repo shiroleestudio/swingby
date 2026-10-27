@@ -47,4 +47,3 @@ for k,p in out.items():
             q[0]=min(W-10,max(10,q[0])); q[1]=min(H-9,max(TOP,q[1]))
     out[k]=[[round(x),round(y)] for x,y in p]
     print(k,out[k])
-json.dump(out,open('pos.json','w'))
