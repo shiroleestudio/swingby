@@ -1,8 +1,8 @@
 // 진행과 잠금 해제. docs/PLAN.md §13.2
 //
 // 단계는 순서대로 열린다. 앞 장에서 CHAPTER_OPEN 칸을 끝내면(cleared 또는 skipped)
-// 다음 장 탭이 열린다 — 전에는 8칸 전부였다. 한 칸에 막혀 접는 이탈을 줄이려고
-// 완화했다(코드 검토 3). 남은 두 칸은 언제든 돌아와 깬다.
+// 다음 장 탭이 열린다 — 처음엔 8칸 전부, 코드 검토 3 에서 6/8, 장마다 5단계로 줄인 뒤(2026-10) 4/5.
+// 한 칸에 막혀 접는 이탈을 줄이려는 것이다. 남은 칸은 언제든 돌아와 깬다.
 // 순수 로직이라 테스트할 수 있다.
 
 import { CHAPTERS, allIds } from './chapters.js';
@@ -15,7 +15,7 @@ export interface Progress {
 }
 
 /** 다음 장이 열리는 데 필요한, 앞 장에서 끝낸 칸 수 (§13.2) */
-export const CHAPTER_OPEN = 6;
+export const CHAPTER_OPEN = 4;
 
 const done = (id: string, p: Progress): boolean => p.cleared(id) || p.skipped(id);
 

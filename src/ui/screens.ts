@@ -5,7 +5,7 @@
 // 화면은 전부 DOM 오버레이다. 캔버스는 뒤에서 계속 돌고,
 // 타이틀에서는 그 캔버스가 데모를 재생한다 (§13.1).
 
-import { CHAPTERS, allIds } from '../levels/chapters.js';
+import { CHAPTERS, allIds, displayId } from '../levels/chapters.js';
 import { chapterOf, isChapterUnlocked, isUnlocked, leftToOpenNext } from '../levels/progress.js';
 import type { Progress } from '../levels/progress.js';
 import { MAX_STARS, starText } from '../levels/stars.js';
@@ -231,7 +231,7 @@ export class Screens {
           st.best !== null ? `<span class="best">${t('card.best', { sec: st.best.toFixed(1) })}</span>` : ''}</span>`
         : '';
       return `<button class="card" style="--i:${i}" data-id="${id}" data-state="${state}" type="button" ${open ? '' : 'disabled'}>
-        <span class="id">${id}</span>
+        <span class="id">${displayId(id)}</span>
         <span class="nm">${open ? this.d.levelName(id) : '???'}</span>
         <span class="st${done ? ' done' : open ? '' : ' lock'}">${mark}</span>
         ${ex}

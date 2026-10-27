@@ -66,7 +66,7 @@
     }
   ],
   "messier": {
-    "n": 27,
+    "n": 57,
     "x": 132,
     "y": 96
   },
@@ -79,7 +79,7 @@
       "launch_step": 0
     },
     "source": "generated",
-    "updated": "2026-10-06",
+    "updated": "2026-10-27",
     "metrics": {
       "main_window": 7,
       "flight_time": 3.64,

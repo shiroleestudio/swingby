@@ -41,23 +41,6 @@
       "role": "optional"
     }
   ],
-  "meta": {
-    "chapter": 1,
-    "slot": 6,
-    "role": "조합 심화",
-    "solution": {
-      "angle": -31.5,
-      "launch_step": 0
-    },
-    "source": "generated",
-    "updated": "2026-09-19",
-    "metrics": {
-      "main_window": 7,
-      "flight_time": 3.91,
-      "clearance": 18.57,
-      "difficulty": 1.84
-    }
-  },
   "rocks": [
     {
       "x": 135,
@@ -83,5 +66,28 @@
       "r": 17,
       "seed": 4
     }
-  ]
+  ],
+  "messier": {
+    "n": 31,
+    "x": 216,
+    "y": 184
+  },
+  "meta": {
+    "chapter": 1,
+    "slot": 6,
+    "role": "조합 심화",
+    "solution": {
+      "angle": -31.5,
+      "launch_step": 0
+    },
+    "source": "generated",
+    "updated": "2026-10-27",
+    "metrics": {
+      "main_window": 7,
+      "flight_time": 3.91,
+      "clearance": 18.57,
+      "difficulty": 1.84,
+      "messier_window": 1.75
+    }
+  }
 }

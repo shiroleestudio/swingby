@@ -57,6 +57,11 @@
     }
   ],
   "hint": "화면 아무 곳이나 끌어 방향을 정하고, 손을 떼면 발사",
+  "messier": {
+    "n": 45,
+    "x": 348,
+    "y": 336
+  },
   "meta": {
     "chapter": 1,
     "slot": 1,
@@ -67,12 +72,13 @@
       "launch_step": 0
     },
     "source": "verified",
-    "updated": "2026-09-18",
+    "updated": "2026-10-27",
     "metrics": {
       "main_window": 7,
       "flight_time": 4.03,
       "clearance": 17.18,
-      "difficulty": 0.55
+      "difficulty": 0.55,
+      "messier_window": 2.25
     }
   }
 }

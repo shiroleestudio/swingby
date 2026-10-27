@@ -159,13 +159,15 @@ export function messierOf(n: number): Messier {
 }
 
 /**
- * 스테이지에 놓은 26개 — 유명한 것부터, 1~6장은 넷씩, 7장은 둘(궤도 행성 단계는 나가기 뒤의
- * 성공 폭이 좁아 둘만 자리가 났다). 나머지 84개는 인피니티(§22.3)의 바깥 링에서 나온다.
+ * 스테이지에 놓은 21개 — 유명한 것부터, 장마다 자리가 난 만큼(최대 넷). 2026-10 에 장마다
+ * 8단계 → 5단계로 줄이며 자리가 줄어, 놓을 곳이 없어진 다섯(M27·M17·M97·M87·M7)은 인피니티로
+ * 옮겼다. 나머지 89개는 인피니티(§22.3)의 바깥 링에서 나온다.
  * 번호를 바꾸면 이미 놓인 단계 파일(messier 키)과 어긋난다 — tests/messier.test.ts 가 맞춰 본다.
+ * `npm run messier -- --all` 은 장마다 이 줄의 번호를 순서대로 놓는다.
  */
-export const STAGE_MESSIER: readonly number[] = [
-  45, 42, 31, 44, 13, 57, 51, 27, 8, 20, 16, 17, 1, 104, 81, 82, 33, 101, 64, 97, 63, 83, 87, 7,
-  6, 11,
+export const STAGE_MESSIER_BY_CHAPTER: readonly (readonly number[])[] = [
+  [45, 42, 31, 44], [13, 57, 51], [8, 20, 16], [1, 104, 81, 82], [33, 101, 64], [63, 83], [6, 11],
 ];
+export const STAGE_MESSIER: readonly number[] = STAGE_MESSIER_BY_CHAPTER.flat();
 export const INFINITY_POOL: readonly number[] = MESSIER
   .map((m) => m.n).filter((n) => !STAGE_MESSIER.includes(n));

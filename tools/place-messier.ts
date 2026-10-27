@@ -1,7 +1,7 @@
 // 메시에 천체 배치 (§22.7). 좌표는 손으로 쓰지 않는다(§0.7) — 이 도구가 정답 길 옆에 놓고
 // 규칙 14(src/tools-shared/collect.ts)로 거른다.
 //
-//   npm run messier -- --all          1~7장, 장마다 가장 좋은 네 칸에 STAGE_MESSIER 순서대로
+//   npm run messier -- --all          1~7장, 장마다 가장 좋은 칸(최대 넷)에 STAGE_MESSIER_BY_CHAPTER 순서대로
 //   npm run messier -- --chapter 3    한 장만
 //   npm run messier -- 2-5 31         한 단계에 M31 을 놓는다 (이미 있으면 바꾼다)
 //
@@ -22,7 +22,7 @@ import { SAVE_KEYS } from '../src/levels/loader.js';
 import {
   COLLECT_DETOUR, MIN_COLLECT_WINDOW, collectMetrics, flyPlanned, pathMinDist, planOf,
 } from '../src/tools-shared/collect.js';
-import { COLLECT_R, STAGE_MESSIER } from '../src/tools-shared/messier.js';
+import { COLLECT_R, STAGE_MESSIER_BY_CHAPTER } from '../src/tools-shared/messier.js';
 import { checkLevel, marginAt } from '../src/tools-shared/metrics.js';
 import { FROM, STEP, TO, runsOf, widthOf } from '../src/tools-shared/scan.js';
 import { DATA_DIR, loadLevel } from './levels-fs.js';
@@ -154,9 +154,10 @@ function chapter(ch: number): void {
     console.log(`  ${id}: ${p ? `후보 폭 ${p.width.toFixed(2)}° 정답에서 ${p.solDist.toFixed(0)} (점수 ${p.score.toFixed(2)})` : '자리 없음'}  ${((Date.now() - started) / 1000).toFixed(1)}초`);
     return { L, p };
   });
-  const picks = scored.filter((s) => s.p).sort((a, b) => b.p!.score - a.p!.score).slice(0, PER_CHAPTER)
+  const nums = STAGE_MESSIER_BY_CHAPTER[ch - 1] ?? [];
+  const picks = scored.filter((s) => s.p).sort((a, b) => b.p!.score - a.p!.score)
+    .slice(0, Math.min(PER_CHAPTER, nums.length))
     .sort((a, b) => a.L.meta.slot - b.L.meta.slot);
-  const nums = STAGE_MESSIER.slice((ch - 1) * PER_CHAPTER, ch * PER_CHAPTER);
   picks.forEach((s, i) => writeLevel(s.L, nums[i]!, s.p!));
   // 고르지 않은 칸에 전에 놓인 것이 있으면 뺀다 — 장마다 넷을 지킨다
   for (const s of scored) {

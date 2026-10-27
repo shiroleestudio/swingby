@@ -61,6 +61,16 @@ export function idsOf(chapter: number): string[] {
   return CHAPTERS.find((c) => c.chapter === chapter)?.levels ?? [];
 }
 
+/** 화면에 보이는 번호. 내린 단계(src/levels/retired/) 때문에 ID 가 1-1·1-4·1-6… 으로 비어도
+ *  보이는 번호는 장 안의 순서대로 1-1~1-5 다. 저장은 ID 로 하므로 깬 기록은 그대로 이어진다 */
+export function displayId(id: string): string {
+  for (const c of CHAPTERS) {
+    const i = c.levels.indexOf(id);
+    if (i >= 0) return \`\${c.chapter}-\${i + 1}\`;
+  }
+  return id;
+}
+
 export function nameOf(chapter: number): string {
   return CHAPTERS.find((c) => c.chapter === chapter)?.name ?? '';
 }

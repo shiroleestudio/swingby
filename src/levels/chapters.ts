@@ -10,13 +10,13 @@ export interface Chapter { chapter: number; name: string; levels: string[] }
 
 /** 장 이름은 §7.3 의 커리큘럼 제목. 탭에 "1장 행성" 형태로 표시된다 (§13.2). */
 export const CHAPTERS: readonly Chapter[] = [
-  { chapter: 1, name: '행성', levels: ['1-1', '1-2', '1-3', '1-4', '1-5', '1-6', '1-7', '1-8'] },
-  { chapter: 2, name: '블랙홀', levels: ['2-1', '2-2', '2-3', '2-4', '2-5', '2-6', '2-7', '2-8'] },
-  { chapter: 3, name: '외계인', levels: ['3-1', '3-2', '3-3', '3-4', '3-5', '3-6', '3-7', '3-8'] },
-  { chapter: 4, name: '공전 행성', levels: ['4-1', '4-2', '4-3', '4-4', '4-5', '4-6', '4-7', '4-8'] },
-  { chapter: 5, name: '넓은 항로', levels: ['5-1', '5-2', '5-3', '5-4', '5-5', '5-6', '5-7', '5-8'] },
-  { chapter: 6, name: '분사', levels: ['6-1', '6-2', '6-3', '6-4', '6-5', '6-6', '6-7', '6-8'] },
-  { chapter: 7, name: '궤도 행성', levels: ['7-1', '7-2', '7-3', '7-4', '7-5', '7-6', '7-7', '7-8'] },
+  { chapter: 1, name: '행성', levels: ['1-1', '1-4', '1-6', '1-7', '1-8'] },
+  { chapter: 2, name: '블랙홀', levels: ['2-1', '2-3', '2-5', '2-7', '2-8'] },
+  { chapter: 3, name: '외계인', levels: ['3-1', '3-2', '3-3', '3-5', '3-8'] },
+  { chapter: 4, name: '공전 행성', levels: ['4-1', '4-2', '4-5', '4-6', '4-8'] },
+  { chapter: 5, name: '넓은 항로', levels: ['5-1', '5-3', '5-5', '5-7', '5-8'] },
+  { chapter: 6, name: '분사', levels: ['6-1', '6-2', '6-5', '6-7', '6-8'] },
+  { chapter: 7, name: '궤도 행성', levels: ['7-1', '7-3', '7-5', '7-7', '7-8'] },
 ];
 
 export function allIds(): string[] {
@@ -25,6 +25,16 @@ export function allIds(): string[] {
 
 export function idsOf(chapter: number): string[] {
   return CHAPTERS.find((c) => c.chapter === chapter)?.levels ?? [];
+}
+
+/** 화면에 보이는 번호. 내린 단계(src/levels/retired/) 때문에 ID 가 1-1·1-4·1-6… 으로 비어도
+ *  보이는 번호는 장 안의 순서대로 1-1~1-5 다. 저장은 ID 로 하므로 깬 기록은 그대로 이어진다 */
+export function displayId(id: string): string {
+  for (const c of CHAPTERS) {
+    const i = c.levels.indexOf(id);
+    if (i >= 0) return `${c.chapter}-${i + 1}`;
+  }
+  return id;
 }
 
 export function nameOf(chapter: number): string {

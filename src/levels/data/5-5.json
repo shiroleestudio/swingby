@@ -40,34 +40,6 @@
       }
     }
   ],
-  "ufos": [
-    {
-      "x": 100,
-      "y": 645,
-      "range": 185,
-      "interval": 1.1,
-      "delay": 0.4,
-      "bs": 240
-    }
-  ],
-  "meta": {
-    "chapter": 5,
-    "slot": 5,
-    "role": "조합",
-    "solution": {
-      "angle": -141.5,
-      "launch_step": 0
-    },
-    "source": "generated",
-    "updated": "2026-09-19",
-    "metrics": {
-      "main_window": 7,
-      "flight_time": 4.33,
-      "clearance": 15.65,
-      "difficulty": 3.1,
-      "timing_fraction": 0.58
-    }
-  },
   "rocks": [
     {
       "x": 420,
@@ -93,5 +65,39 @@
       "r": 18,
       "seed": 4
     }
-  ]
+  ],
+  "ufos": [
+    {
+      "x": 100,
+      "y": 645,
+      "range": 185,
+      "interval": 1.1,
+      "delay": 0.4,
+      "bs": 240
+    }
+  ],
+  "messier": {
+    "n": 101,
+    "x": 300,
+    "y": 372
+  },
+  "meta": {
+    "chapter": 5,
+    "slot": 5,
+    "role": "조합",
+    "solution": {
+      "angle": -141.5,
+      "launch_step": 0
+    },
+    "source": "generated",
+    "updated": "2026-10-27",
+    "metrics": {
+      "main_window": 7,
+      "flight_time": 4.33,
+      "clearance": 15.65,
+      "difficulty": 3.1,
+      "timing_fraction": 0.58,
+      "messier_window": 1.5
+    }
+  }
 }

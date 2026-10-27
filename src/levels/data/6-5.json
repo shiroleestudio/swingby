@@ -63,7 +63,7 @@
   "hint": "블랙홀 쪽으로 꺾으면 안 돼요",
   "turns": 1,
   "messier": {
-    "n": 83,
+    "n": 63,
     "x": 236,
     "y": 120
   },
@@ -82,7 +82,7 @@
       ]
     },
     "source": "generated",
-    "updated": "2026-10-06",
+    "updated": "2026-10-27",
     "metrics": {
       "main_window": 6.5,
       "flight_time": 3.35,

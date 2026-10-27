@@ -4,6 +4,8 @@
 //   · 번역에서 문구가 빠지거나 남는 것 (tsc 도 막지만, 여기서도 다시 본다)
 //   · 자리표시자({n} 등)가 언어마다 달라 숫자가 안 들어가는 것
 //   · 새 단계를 등록하고 번역을 빠뜨리는 것 — CI 관문이다
+import { readdirSync } from 'node:fs';
+
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { CHAPTERS, allIds } from '../src/levels/chapters.js';
@@ -67,7 +69,10 @@ describe('단계와 장의 번역', () => {
   });
 
   it('등록되지 않은 단계의 번역이 없다 — ID 오타를 잡는다', () => {
-    const ids = new Set(allIds());
+    // 내린 단계(src/levels/retired/)의 번역은 다시 올릴 때를 위해 남겨 둔다
+    const retired = readdirSync(new URL('../src/levels/retired/', import.meta.url))
+      .filter((f) => f.endsWith('.json')).map((f) => f.slice(0, -5));
+    const ids = new Set([...allIds(), ...retired]);
     for (const l of OTHERS) {
       for (const id of Object.keys(LEVEL_TEXT[l])) expect(ids.has(id), `${l} ${id}`).toBe(true);
     }

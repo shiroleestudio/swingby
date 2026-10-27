@@ -7,6 +7,7 @@ import type { Outcome } from '../core/types.js';
 import type { Session } from '../game/session.js';
 import { type Key, t } from '../i18n/index.js';
 import { levelHint, levelName } from '../i18n/levels.js';
+import { displayId } from '../levels/chapters.js';
 import { heartIcon, img, perkIcon, rabbitIcon } from './art.js';
 import { PERK_KINDS } from '../tools-shared/perks.js';
 
@@ -100,8 +101,8 @@ export class Hud {
       set(this.stageId, t('inf.time', { sec: sec.toFixed(1) }));
       set(this.stageText, t(this.infDaily ? 'inf.todayBest' : 'inf.best',
         { sec: Math.max(this.infBest, sec).toFixed(1) }));
-    } else if (this.stageId.textContent !== s.level.id) {
-      set(this.stageId, s.level.id);
+    } else if (this.stageId.textContent !== displayId(s.level.id)) {
+      set(this.stageId, displayId(s.level.id));
       // 단계가 바뀌면 번호가 한 번 튄다 (§12.7). 클래스를 뗐다 붙여야 애니메이션이 다시 돈다
       this.stage.classList.remove('pop');
       void this.stage.offsetWidth;

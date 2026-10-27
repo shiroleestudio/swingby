@@ -57,7 +57,7 @@
   "hint": "붉은 원 가장자리를 지나 맨 위에서 꺾어요",
   "turns": 1,
   "messier": {
-    "n": 7,
+    "n": 83,
     "x": 324,
     "y": 56
   },
@@ -76,7 +76,7 @@
       ]
     },
     "source": "generated",
-    "updated": "2026-10-06",
+    "updated": "2026-10-27",
     "metrics": {
       "main_window": 5,
       "flight_time": 4.09,

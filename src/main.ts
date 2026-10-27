@@ -14,7 +14,7 @@ import { ARENA_H, ARENA_W } from './core/boss.js';
 import { clampArc, padAngle } from './core/angle.js';
 import { AimInput } from './game/input.js';
 import { END_SECONDS, Session } from './game/session.js';
-import { DOME_DRAW_R, FieldRenderer } from './render/field.js';
+import { FieldRenderer } from './render/field.js';
 import { drawMinimap, miniRect } from './render/minimap.js';
 import type { MiniRect } from './render/minimap.js';
 import { Hud } from './ui/hud.js';
@@ -604,8 +604,7 @@ canvas.addEventListener('pointercancel', (e) => {
 });
 
 function updateAim(x: number, y: number): void {
-  const [cx, cy] = cam.toScreen(session.level.start.x, session.level.start.y);
-  session.aimFar = aim.update(session.level, x, y, cx, cy, DOME_DRAW_R * cam.scale);
+  session.aimFar = aim.update(session.level, x, y);
   if (session.aimFar) session.setAngle(aim.angle);
 }
 

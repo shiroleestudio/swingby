@@ -41,7 +41,7 @@ describe('장 잠금 (§13.2)', () => {
     expect(isChapterUnlocked(1, P())).toBe(true);
   });
 
-  it('이전 장에서 CHAPTER_OPEN 칸을 끝내야 다음 장이 열린다 (코드 검토 3 에서 8 → 6)', () => {
+  it('이전 장에서 CHAPTER_OPEN 칸을 끝내야 다음 장이 열린다 (코드 검토 3 에서 8 → 6, 5단계 장에서 4)', () => {
     expect(isChapterUnlocked(2, P())).toBe(false);
     expect(isChapterUnlocked(2, P([FIRST]))).toBe(false);
     expect(isChapterUnlocked(2, P(CH1.slice(0, CHAPTER_OPEN - 1)))).toBe(false);
@@ -58,7 +58,7 @@ describe('장 잠금 (§13.2)', () => {
     expect(isUnlocked(CH2[0]!, p)).toBe(true);
     expect(isUnlocked(CH2[1]!, p)).toBe(false);                // 그 장 안에서는 순서대로
     expect(isUnlocked(CH1[CHAPTER_OPEN]!, p)).toBe(true);      // 남은 칸도 그대로 열려 있다
-    expect(isUnlocked(CH1_LAST, p)).toBe(false);
+    if (CH1.length > CHAPTER_OPEN + 1) expect(isUnlocked(CH1_LAST, p)).toBe(false);
   });
 
   it('다음 장까지 남은 칸 수', () => {

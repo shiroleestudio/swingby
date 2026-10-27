@@ -52,7 +52,7 @@ zip 맨 위에 `index.html` 이 있다. 새 버전은 같은 명령으로 다시
 > A moon rabbit rides a carrot rocket from planet to planet. You get one launch:
 > drag to aim, let go, and let gravity bend your path into the burrow.
 >
-> - **56 hand-checked stages in 7 chapters** — planets, black holes, alien patrols,
+> - **35 hand-checked stages in 7 chapters** — planets, black holes, alien patrols,
 >   moving planets, wide maps, **boosts** (tap or swipe mid-flight to veer) and **orbit stations**
 >   (get caught in orbit, tap to fly off). Three stars per stage.
 > - Every stage is verified solvable with room for human error — no pixel-perfect luck.
@@ -71,7 +71,7 @@ zip 맨 위에 `index.html` 이 있다. 새 버전은 같은 명령으로 다시
 > 당근 로켓을 탄 달토끼가 행성 사이를 날아요. 기회는 한 번 — 끌어서 조준하고, 놓으면
 > 중력이 길을 꺾어 토끼굴로 데려가요.
 >
-> - **7장 56단계** — 행성, 블랙홀, 외계인, 움직이는 행성, 넓은 맵, **분사**(날다가 탭하거나 끌면 꺾여요),
+> - **7장 35단계** — 행성, 블랙홀, 외계인, 움직이는 행성, 넓은 맵, **분사**(날다가 탭하거나 끌면 꺾여요),
 >   **궤도 행성**(붙잡혀 돌다가 탭하면 출발). 단계마다 별 셋
 > - 모든 단계가 "풀린다"와 "사람이 해낼 여유가 있다"까지 검증되어 있어요
 > - **인피니티**: 끝없는 우주에서 오래 버티기. 레벨이 오르면 능력을 고르고, 2분마다 모선과 싸우고,

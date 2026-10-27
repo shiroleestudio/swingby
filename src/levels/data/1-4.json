@@ -61,7 +61,7 @@
   ],
   "hint": "가까이 지날수록 크게 꺾여요",
   "messier": {
-    "n": 31,
+    "n": 42,
     "x": 332,
     "y": 192
   },
@@ -69,12 +69,13 @@
     "chapter": 1,
     "slot": 4,
     "role": "휴식·확장",
+    "intro": "rock",
     "solution": {
       "angle": -134,
       "launch_step": 0
     },
     "source": "verified",
-    "updated": "2026-10-06",
+    "updated": "2026-10-27",
     "metrics": {
       "main_window": 11.25,
       "flight_time": 3.59,

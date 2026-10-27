@@ -50,23 +50,6 @@
       "role": "optional"
     }
   ],
-  "meta": {
-    "chapter": 2,
-    "slot": 8,
-    "role": "마무리",
-    "solution": {
-      "angle": -113,
-      "launch_step": 0
-    },
-    "source": "generated",
-    "updated": "2026-09-19",
-    "metrics": {
-      "main_window": 6,
-      "flight_time": 3.71,
-      "clearance": 30.07,
-      "difficulty": 3.63
-    }
-  },
   "rocks": [
     {
       "x": 40,
@@ -80,5 +63,28 @@
       "r": 20,
       "seed": 2
     }
-  ]
+  ],
+  "messier": {
+    "n": 51,
+    "x": 244,
+    "y": 252
+  },
+  "meta": {
+    "chapter": 2,
+    "slot": 8,
+    "role": "마무리",
+    "solution": {
+      "angle": -113,
+      "launch_step": 0
+    },
+    "source": "generated",
+    "updated": "2026-10-27",
+    "metrics": {
+      "main_window": 6,
+      "flight_time": 3.71,
+      "clearance": 30.07,
+      "difficulty": 3.63,
+      "messier_window": 1.5
+    }
+  }
 }

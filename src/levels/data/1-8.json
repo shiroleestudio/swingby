@@ -41,24 +41,6 @@
       "role": "optional"
     }
   ],
-  "meta": {
-    "chapter": 1,
-    "slot": 8,
-    "role": "마무리",
-    "intro": "wide",
-    "solution": {
-      "angle": -128,
-      "launch_step": 0
-    },
-    "source": "generated",
-    "updated": "2026-09-19",
-    "metrics": {
-      "main_window": 6,
-      "flight_time": 5.01,
-      "clearance": 14.73,
-      "difficulty": 3.11
-    }
-  },
   "rocks": [
     {
       "x": 215,
@@ -79,5 +61,29 @@
       "seed": 3
     }
   ],
-  "hint": "미니맵으로 전체 항로를 먼저 살펴보세요"
+  "hint": "미니맵으로 전체 항로를 먼저 살펴보세요",
+  "messier": {
+    "n": 44,
+    "x": 312,
+    "y": 176
+  },
+  "meta": {
+    "chapter": 1,
+    "slot": 8,
+    "role": "마무리",
+    "intro": "wide",
+    "solution": {
+      "angle": -128,
+      "launch_step": 0
+    },
+    "source": "generated",
+    "updated": "2026-10-27",
+    "metrics": {
+      "main_window": 6,
+      "flight_time": 5.01,
+      "clearance": 14.73,
+      "difficulty": 3.11,
+      "messier_window": 1.5
+    }
+  }
 }
