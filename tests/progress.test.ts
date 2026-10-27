@@ -148,4 +148,19 @@ describe('저장 데이터 합치기 (§15.3)', () => {
     expect(s.data.settings.glow).toBe('normal');       // 기본값 유지
     expect(s.data.ads.free_hint_used).toBe(false);
   });
+
+  it('배율을 직접 고른 적이 없는 옛 저장은 보통으로 옮긴다 (§22.4.6)', () => {
+    const load = (settings: object) => {
+      const s = new Save();
+      localStorage.setItem('swingby.save.v1', JSON.stringify({ version: 1, levels: {}, seen_intros: [], settings, ads: {} }));
+      s.load();
+      return s.data.settings;
+    };
+    expect(load({ zoom: 'x2', fps: 30 }).zoom).toBe('fit');
+    expect(load({ zoom: 'x2', fps: 60, display_set: true }).zoom).toBe('fit');
+    expect(load({ zoom: 'x15', fps: 60 }).zoom).toBe('fit');
+    expect(load({ zoom: 'x2', zoom_set: true }).zoom).toBe('x2');
+    expect(load({ zoom: 'x15', zoom_set: true }).zoom).toBe('x15');
+    expect(load({}).zoom).toBe('fit');
+  });
 });

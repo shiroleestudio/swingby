@@ -29,12 +29,14 @@ export interface SaveData {
     /** 사용자가 모션 줄이기를 직접 건드린 적이 있는가.
      *  없으면 OS 의 prefers-reduced-motion 을 따른다 (§12.4) */
     reduce_motion_set: boolean;
-    /** 화면 배율 (§11). 폰에서 요소가 작아 2배가 기본 (§22.4.4) */
+    /** 화면 배율 (§11). 기본 보통 — 보통 맵은 한 화면에, 큰 맵만 미니맵으로 (§22.4.6) */
     zoom: 'fit' | 'x15' | 'x2';
     /** 그리는 프레임. 물리는 240Hz 고정이라 30 이어도 결과가 같다 (§5.8). 기본 30 (§22.4.4) */
     fps: 60 | 30;
     /** 배율·프레임을 사용자가 직접 고른 적이 있는가. 없으면 기본값이 바뀔 때 새 기본값을 따른다 */
     display_set: boolean;
+    /** 배율을 사용자가 직접 고른 적이 있는가 (§22.4.6). 없으면 보통으로 옮긴다 */
+    zoom_set: boolean;
   };
   ads: {
     free_hint_used: boolean; clears_since_interstitial: number;
@@ -56,7 +58,7 @@ const defaults = (): SaveData => ({
   seen_intros: [],
   settings: {
     sfx: true, haptics: true, glow: 'normal', bgm: true,
-    reduce_motion: false, reduce_motion_set: false, lang: 'auto', zoom: 'x2', fps: 30, display_set: false,
+    reduce_motion: false, reduce_motion_set: false, lang: 'auto', zoom: 'fit', fps: 30, display_set: false, zoom_set: false,
   },
   ads: {
     free_hint_used: false, clears_since_interstitial: 0,
@@ -89,6 +91,9 @@ export class Save {
       // 직접 고른 적이 없고 옛 기본값 그대로면 새 기본값(2×·30)으로 옮긴다 (§22.4.4)
       const st = this.data.settings;
       if (!st.display_set && st.zoom === 'x15' && st.fps === 60) { st.zoom = 'x2'; st.fps = 30; }
+      // 2× 가 기본이던 때(§22.4.4)는 보통 맵도 화면을 넘어 큰 맵이 특별하지 않았다.
+      // 배율을 직접 고른 기록이 없는 저장은 모두 보통으로 옮긴다 (§22.4.6, 사용자 결정)
+      if (!st.zoom_set) st.zoom = 'fit';
     } catch { /* 손상된 값은 버리고 기본값으로 간다 */ }
   }
 
