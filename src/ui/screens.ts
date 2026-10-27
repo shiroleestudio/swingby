@@ -10,7 +10,8 @@ import { chapterOf, isChapterUnlocked, isUnlocked, leftToOpenNext } from '../lev
 import type { Progress } from '../levels/progress.js';
 import { MAX_STARS, starText } from '../levels/stars.js';
 import { introFor, seenKey } from './intro.js';
-import { LANGS, LANG_NAME, type LangSetting, t } from '../i18n/index.js';
+import { LANGS, LANG_NAME, type Key, type LangSetting, t } from '../i18n/index.js';
+import { MAP_H, MAP_W, ZODIAC } from '../levels/zodiac.js';
 import { chapterName } from '../i18n/levels.js';
 import { img, introArt, messierIcon, rabbitIcon } from './art.js';
 import { MESSIER, MESSIER_COUNT } from '../tools-shared/messier.js';
@@ -109,7 +110,7 @@ export class Screens {
         <button class="btn primary" data-a="start" type="button">${t('title.stage')}</button>
         ${this.d.infinityOpen()
           ? `<button class="btn next" data-a="infinity" type="button">${t('title.infinity')}</button>`
-          : `<button class="btn" type="button" disabled>${t('title.infinity')}<small>${t('title.infLocked')}</small></button>`}
+          : `<button class="btn" type="button" disabled>${t('title.infinity')}<small>${t('title.infLocked', { id: displayId('1-8') })}</small></button>`}
         <button class="btn" data-a="catalog" type="button">${t('title.catalog')}<small>${
           t('cat.count', { n: Object.keys(this.d.catalog()).length, max: MESSIER_COUNT })}</small></button>
         <div class="pair">
@@ -204,7 +205,7 @@ export class Screens {
     this.introEl.hidden = false;
   }
 
-  // ── §13.2 단계 선택 ───────────────────────────────────────────────────
+  // ── §13.2 단계 선택 — 별자리 지도 (§13.2.2) ────────────────────────────
   showSelect(chapter?: number): void {
     this.hideAll();
     if (chapter !== undefined) this.chapter = chapter;
@@ -212,32 +213,13 @@ export class Screens {
     const tabs = CHAPTERS.map((c) => {
       const open = isChapterUnlocked(c.chapter, p);
       return `<button class="tab" data-ch="${c.chapter}" type="button"
-        aria-selected="${c.chapter === this.chapter}" ${open ? '' : 'disabled'}
-        >${open ? t('chapter.label', { n: c.chapter, name: chapterName(c.chapter, c.name) })
-          : t('chapter.locked', { n: c.chapter })}</button>`;
+        aria-selected="${c.chapter === this.chapter}" ${open ? '' : 'disabled'} aria-label="${
+          open ? t('chapter.label', { n: c.chapter, name: chapterName(c.chapter, c.name) })
+            : t('chapter.locked', { n: c.chapter })}">${c.chapter}</button>`;
     }).join('');
 
     const ch = CHAPTERS.find((c) => c.chapter === this.chapter) ?? CHAPTERS[0]!;
-    let starSum = 0;
-    const cards = ch.levels.map((id, i) => {
-      const open = isUnlocked(id, p);
-      const done = p.cleared(id);
-      const state = p.skipped(id) ? 'skipped' : done ? 'cleared' : open ? 'open' : 'locked';
-      const mark = t(`mark.${state}` as const);
-      // 별과 최고 시간 (§13.2). 깬 단계에만 — 다시 와서 더 잘 깰 이유를 보여 준다
-      const st = this.d.levelStats(id);
-      starSum += st.stars;
-      const ex = done
-        ? `<span class="ex"><span class="stars">${starText(st.stars)}</span>${
-          st.best !== null ? `<span class="best">${t('card.best', { sec: st.best.toFixed(1) })}</span>` : ''}</span>`
-        : '';
-      return `<button class="card" style="--i:${i}" data-id="${id}" data-state="${state}" type="button" ${open ? '' : 'disabled'}>
-        <span class="id">${displayId(id)}</span>
-        <span class="nm">${open ? this.d.levelName(id) : '???'}</span>
-        <span class="st${done ? ' done' : open ? '' : ' lock'}">${mark}</span>
-        ${ex}
-      </button>`;
-    }).join('');
+    const starSum = ch.levels.reduce((n, id) => n + this.d.levelStats(id).stars, 0);
     // 다음 장이 아직 잠겼으면 몇 칸 남았는지 (§13.2)
     const left = leftToOpenNext(ch.chapter, p);
     const note = left > 0
@@ -254,7 +236,7 @@ export class Screens {
         t('picker.stars', { n: starSum, max: ch.levels.length * MAX_STARS })}</span></h2>
       <div class="tabs">${tabs}</div>
       ${note}
-      <div class="grid">${cards}</div>`;
+      <div class="world"></div>`;
 
     this.bind(this.pickerEl, {
       title: () => this.showTitle(),
@@ -264,10 +246,98 @@ export class Screens {
     for (const t of this.pickerEl.querySelectorAll<HTMLButtonElement>('.tab')) {
       t.addEventListener('click', () => this.showSelect(Number(t.dataset['ch'])));
     }
-    for (const c of this.pickerEl.querySelectorAll<HTMLButtonElement>('.card')) {
-      c.addEventListener('click', () => this.d.onPick(c.dataset['id']!));
-    }
+    this.renderWorld();
     this.pickerEl.hidden = false;
+  }
+
+  /** 장마다 고른 단계. 처음엔 아직 안 깬 첫 칸 — 토끼가 거기 서 있다 */
+  private picked: Record<number, string> = {};
+
+  private pickedIn(levels: readonly string[]): string {
+    const p = this.d.progress;
+    const had = this.picked[this.chapter];
+    if (had && levels.includes(had) && isUnlocked(had, p)) return had;
+    return levels.find((id) => isUnlocked(id, p) && !p.cleared(id))
+      ?? [...levels].reverse().find((id) => isUnlocked(id, p)) ?? levels[0]!;
+  }
+
+  /** 지도와 고른 단계 판. 별을 누르면 고르고, 고른 별을 한 번 더 누르면 출발 */
+  private renderWorld(): void {
+    const world = this.pickerEl.querySelector<HTMLElement>('.world');
+    if (!world) return;
+    const p = this.d.progress;
+    const ch = CHAPTERS.find((c) => c.chapter === this.chapter) ?? CHAPTERS[0]!;
+    const z = ZODIAC[ch.chapter];
+    const sel = this.pickedIn(ch.levels);
+    const state = (id: string): string =>
+      p.skipped(id) ? 'skipped' : p.cleared(id) ? 'cleared' : isUnlocked(id, p) ? 'open' : 'locked';
+
+    // 별자리 선: 양 끝 단계를 다 깼으면 밝게
+    const lines = (z?.lines ?? []).map(([a, b]) => {
+      const [ax, ay] = z!.stars[a]!, [bx, by] = z!.stars[b]!;
+      const on = p.cleared(ch.levels[a]!) && p.cleared(ch.levels[b]!);
+      return `<line x1="${ax}" y1="${ay}" x2="${bx}" y2="${by}" class="${on ? 'on' : ''}"/>`;
+    }).join('');
+    const nodes = ch.levels.map((id, i) => {
+      const [x, y] = z?.stars[i] ?? [10 + i * 18, MAP_H / 2];
+      const s = state(id);
+      return `<button class="node" data-id="${id}" data-state="${s}" type="button"
+        style="left:${x}%;top:${(y / MAP_H) * 100}%" aria-pressed="${id === sel}"
+        aria-label="${displayId(id)}" ${s === 'locked' ? 'disabled' : ''}>
+        ${id === sel ? img(rabbitIcon('idle'), '', 'px who') : ''}<i class="star"></i>
+        <span class="id">${displayId(id)}</span></button>`;
+    }).join('');
+
+    // 고른 단계 판 (§13.2): 이름·상태·별·최고 시간, 출발
+    const s = state(sel);
+    const done = p.cleared(sel);
+    const st = this.d.levelStats(sel);
+    const ex = done
+      ? `<span class="ex"><span class="stars">${starText(st.stars)}</span>${
+        st.best !== null ? `<span class="best">${t('card.best', { sec: st.best.toFixed(1) })}</span>` : ''}</span>`
+      : '';
+
+    world.innerHTML = `
+      <div class="map">
+        <div class="cname"><b>${t(`zodiac.${ch.chapter}` as Key)}</b><small>${
+          t('chapter.label', { n: ch.chapter, name: chapterName(ch.chapter, ch.name) })} · ${z?.latin ?? ''}</small></div>
+        <svg viewBox="0 0 ${MAP_W} ${MAP_H}" preserveAspectRatio="none" aria-hidden="true">${lines}</svg>
+        ${nodes}
+      </div>
+      <div class="info">
+        <div class="card" data-state="${s}">
+          <span class="id">${displayId(sel)}</span>
+          <span class="nm">${this.d.levelName(sel)}</span>
+          <span class="st${done ? ' done' : ''}">${t(`mark.${s}` as Key)}</span>
+          ${ex}
+        </div>
+        <button class="btn primary go" data-a="go" type="button">${t('picker.go')}</button>
+        <p class="keys">${t('picker.keys')}</p>
+      </div>`;
+
+    this.bind(world, { go: () => this.d.onPick(sel) });
+    for (const n of world.querySelectorAll<HTMLButtonElement>('.node')) {
+      n.addEventListener('click', () => {
+        const id = n.dataset['id']!;
+        if (id === sel) { this.d.onPick(id); return; }
+        this.picked[this.chapter] = id;
+        this.renderWorld();
+        world.querySelector<HTMLButtonElement>(`.node[data-id="${id}"]`)?.focus({ preventScroll: true });
+      });
+    }
+  }
+
+  /** 단계 선택 화면의 키보드 (§10.6): ←/→ 로 앞뒤 단계, Enter·Space 로 출발. 먹었으면 true */
+  selectKey(key: string): boolean {
+    if (this.pickerEl.hidden || !this.introEl.hidden || !this.settingsEl.hidden) return false;
+    const ch = CHAPTERS.find((c) => c.chapter === this.chapter) ?? CHAPTERS[0]!;
+    const sel = this.pickedIn(ch.levels);
+    if (key === 'Enter' || key === ' ') { this.d.onPick(sel); return true; }
+    const step = key === 'ArrowRight' || key === 'ArrowDown' ? 1 : key === 'ArrowLeft' || key === 'ArrowUp' ? -1 : 0;
+    if (!step) return false;
+    const next = ch.levels[ch.levels.indexOf(sel) + step];
+    if (next && isUnlocked(next, this.d.progress)) { this.picked[this.chapter] = next; this.renderWorld(); }
+    return true;
   }
 
   hideSelect(): void { this.hideAll(); }
@@ -457,7 +527,10 @@ export class Screens {
   }
 
   /** 장 탭을 현재 단계에 맞춘다. */
-  syncChapter(levelId: string): void { this.chapter = chapterOf(levelId); }
+  syncChapter(levelId: string): void {
+    this.chapter = chapterOf(levelId);
+    this.picked[this.chapter] = levelId;   // 지도에서 토끼가 방금 한 단계에 서 있다
+  }
 
   static allIds = allIds;
 }

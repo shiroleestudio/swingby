@@ -28,7 +28,7 @@ zip 맨 위에 `index.html` 이 있다. 새 버전은 같은 명령으로 다시
 | Release status | Released (먼저 보여 주고 반응을 보려면 In development) |
 | Pricing | **No payments** 또는 **$0 or donate**(제안 금액 $2) — 아래 "수익" 참고 |
 | Uploads | `swingby-itch.zip` 올리고 **"This file will be played in the browser"** 체크 |
-| Viewport dimensions | **480 × 854** (세로) |
+| Viewport dimensions | **960 × 720** (PC 배치, PLAN §13.8) |
 | Frame options | **Mobile friendly** ✓ → Orientation **Portrait**, **Fullscreen button** ✓, Automatically start ✗ |
 | Genre | Puzzle |
 | Tags (최대 10) | `puzzle` `physics` `gravity` `space` `pixel-art` `cute` `casual` `mobile` `touch` `retro` |
@@ -41,7 +41,7 @@ zip 맨 위에 `index.html` 이 있다. 새 버전은 같은 명령으로 다시
 확인한 것(2026-10, 다른 출처의 iframe 에서 실제로 눌러 봄): 타이틀·설정(버전·광고 제거 줄 없음)·힌트 무료·
 서비스 워커 0·저장 동작·인피니티 결과의 **이어하기가 광고 없이** 바로 이어짐·레벨업 "다시 뽑기" 무료.
 
-폰에서는 itch 가 언제나 전체 화면으로 띄운다. 위의 480×854 는 PC 에서 페이지 안에 넣을 때 크기다.
+폰에서는 itch 가 언제나 전체 화면으로 띄운다. 위의 960×720 은 PC 에서 페이지 안에 넣을 때 크기다 — 이 크기면 PC 배치(맵 왼쪽, 오른쪽 패널)로 뜬다.
 
 ## 3. 소개 문구
 

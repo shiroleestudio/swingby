@@ -295,6 +295,23 @@ for (const ev of ['pointerdown', 'keydown'] as const) {
 let canvasLeft = 0, canvasTop = 0;
 
 /**
+ * PC 배치 (§13.8). 창이 가로로 넉넉하면 플레이 중 HUD 를 오른쪽 패널로 옮기고 맵이 세로를 채운다.
+ * 폰 가로(높이 560 미만)와 세로 화면은 그대로다. 타이틀·단계 선택은 `wide` 만 보고 넓게 편다
+ */
+const WIDE_MIN_W = 860, WIDE_MIN_H = 560;
+const root = document.documentElement;
+const isWide = (): boolean =>
+  innerWidth >= WIDE_MIN_W && innerHeight >= WIDE_MIN_H && innerWidth >= innerHeight * 1.2;
+/** 오른쪽 패널이 켜져 있는가: 넓은 창 + 플레이 화면(데모·오버레이 아님) */
+let sideOn = false;
+function syncSide(): void {
+  const on = isWide() && !demo && !screens.overlayOpen && !!session.level;
+  if (on === sideOn) return;
+  sideOn = on;
+  resize();   // 캔버스 폭이 바뀐다
+}
+
+/**
  * 캔버스 크기를 창에 맞춘다.
  *
  * `canvas.width` 에 값을 넣으면 **같은 값이어도** 뒷버퍼를 새로 잡고 내용을 지운다.
@@ -302,6 +319,8 @@ let canvasLeft = 0, canvasTop = 0;
  * 크기가 실제로 바뀔 때만 건드린다.
  */
 function resize(): void {
+  root.classList.toggle('wide', isWide());
+  root.classList.toggle('side', sideOn);
   const r = canvas.getBoundingClientRect();
   cssW = r.width; cssH = r.height;
   canvasLeft = r.left; canvasTop = r.top;
@@ -327,6 +346,7 @@ addEventListener('resize', resize);
  */
 const ANGLE_PANEL_H = 40;
 function insets(r: DOMRect): [number, number] {
+  if (sideOn) return [0, 0];   // PC 배치: HUD 와 각도 판이 오른쪽 패널에 있어 맵을 가리지 않는다
   const top = Math.max(0, hudTop.getBoundingClientRect().bottom - r.top);
   const bottom = (parseFloat(getComputedStyle(hud.angle).bottom) || 0) + ANGLE_PANEL_H;
   return [top, bottom];
@@ -627,6 +647,8 @@ addEventListener('keydown', (e) => {
   if (e.ctrlKey || e.metaKey || e.altKey || e.repeat && e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
   const tag = (document.activeElement as HTMLElement | null)?.tagName;
   if (tag === 'SELECT' || tag === 'INPUT' || tag === 'TEXTAREA') return;
+  // 단계 선택 지도 (§13.2.2): ←/→ 로 별을 옮기고 Enter 로 출발. 버튼에 초점이 있으면 Enter 는 그 버튼 몫
+  if (!(tag === 'BUTTON' && (e.key === 'Enter' || e.key === ' ')) && screens.selectKey(e.key)) { e.preventDefault(); return; }
   if (demo || screens.overlayOpen || hints.open || !session.level) return;
   if (levelup.open) {
     // 레벨업 카드: 1·2·3 또는 Enter(첫 카드)
@@ -1018,6 +1040,7 @@ function syncBgm(): void {
 }
 
 function syncHudVisibility(): void {
+  syncSide();
   const show = !demo && !screens.overlayOpen && !hints.open && !levelup.open;
   if (show === hudShown) return;
   hudShown = show;

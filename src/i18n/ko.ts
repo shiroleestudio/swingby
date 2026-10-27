@@ -10,7 +10,7 @@ export const ko = {
   'title.sub': '달토끼',
   'title.stage': '스테이지',
   'title.infinity': '인피니티',
-  'title.infLocked': '1-8 을 깨면 열려요',
+  'title.infLocked': '{id} 을 깨면 열려요',
   'title.settings': '설정',
 
   // §13.2 단계 선택
@@ -28,6 +28,20 @@ export const ko = {
   'picker.unlockNote': '{k}칸 더 깨면 {n}장이 열려요',
   'picker.stars': '★ {n}/{max}',
   'card.best': '{sec}초',
+  'picker.go': '출발',
+  'picker.keys': '← → 단계 고르기 · Enter 출발',
+  'zodiac.1': '양자리',
+  'zodiac.2': '황소자리',
+  'zodiac.3': '쌍둥이자리',
+  'zodiac.4': '게자리',
+  'zodiac.5': '사자자리',
+  'zodiac.6': '처녀자리',
+  'zodiac.7': '천칭자리',
+  'keys.title': '키보드',
+  'keys.aim': '← → 조준 · Shift 5°',
+  'keys.launch': 'Space 발사',
+  'keys.boost': '날면서 ← → 분사',
+  'keys.retry': 'R 다시 · Esc 취소',
 
   // §13.3 HUD
   'hud.levels': '단계',

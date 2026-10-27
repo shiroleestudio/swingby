@@ -266,11 +266,10 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 .langs .btn[aria-pressed="true"]{background:var(--yellow)}
 
 .tabs{display:flex;gap:6px;flex-wrap:wrap}
-.tab{min-height:38px;padding:0 10px;border:3px solid var(--ink);background:var(--white);
-     color:var(--ink);font:700 13px/1 var(--text);cursor:pointer;border-radius:0}
+.tab{min-height:44px;min-width:40px;max-width:56px;flex:1 1 0;padding:0 4px;border:3px solid var(--ink);background:var(--white);
+     color:var(--ink);font:400 18px/1 var(--display);cursor:pointer;border-radius:0}
 .tab[aria-selected="true"]{background:var(--orange)}
 .tab[disabled]{background:var(--gray);color:var(--white);cursor:default}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:560px;width:100%}
 
 .card{display:grid;grid-template-columns:1fr auto;grid-template-rows:auto 1fr;gap:6px 8px;
       min-height:80px;padding:8px 10px;text-align:left;cursor:pointer;color:var(--ink);
@@ -294,6 +293,42 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 .card .best{font-size:12px}
 .screen h2 .sum{margin-left:auto;font:400 16px/1 var(--display);color:var(--yellow)}
 .unlocknote{margin:-6px 0 0;font:700 12px/1.4 var(--text);color:var(--ink)}
+
+/* 별자리 지도 (§13.2.2): 장 하나가 별자리 하나, 별 하나가 단계 하나. 깬 별끼리 잇는 선이 밝아진다 */
+@media (max-height:700px){#picker{gap:10px}}
+.world{display:flex;flex-direction:column;gap:12px;width:100%;max-width:560px}
+.map{position:relative;width:100%;aspect-ratio:5 / 4;border:4px solid var(--ink);box-shadow:6px 6px 0 var(--ink);
+     background:var(--deep) var(--stars,none) repeat;background-size:192px 192px}
+.map svg{position:absolute;inset:0;width:100%;height:100%}
+.map line{stroke:var(--lav);stroke-width:2;stroke-dasharray:3 5;vector-effect:non-scaling-stroke}
+.map line.on{stroke:var(--yellow);stroke-width:3;stroke-dasharray:none}
+.cname{position:absolute;left:10px;top:8px;display:flex;flex-direction:column;gap:4px;pointer-events:none}
+.cname b{font:400 20px/1 var(--display);color:var(--paper);text-shadow:2px 2px 0 var(--ink)}
+.cname small{font:700 11px/1 var(--text);color:var(--lav)}
+.node{position:absolute;width:52px;height:52px;margin:-26px 0 0 -26px;padding:0;border:0;background:none;
+      display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--white);
+      --p:5px;border-radius:0}
+.node:focus-visible{outline:3px solid var(--yellow);outline-offset:-4px}
+/* 픽셀 별: 가운데 칸과 상하좌우 네 칸 */
+.node .star{display:block;width:var(--p);height:var(--p);background:currentColor;
+  box-shadow:0 calc(-1 * var(--p)) currentColor,0 var(--p) currentColor,calc(-1 * var(--p)) 0 currentColor,var(--p) 0 currentColor}
+.node[data-state="cleared"]{color:var(--yellow);--p:6px}
+.node[data-state="skipped"]{color:var(--lav2)}
+.node[data-state="open"] .star{animation:twinkle 1s steps(2) infinite}
+.node[data-state="locked"]{color:var(--gray);--p:3px;cursor:default}
+@keyframes twinkle{50%{color:var(--yellow)}}
+.node .id{position:absolute;top:40px;left:50%;transform:translateX(-50%);white-space:nowrap;
+  font:400 12px/1 var(--display);color:var(--white);
+  text-shadow:2px 0 0 var(--ink),-2px 0 0 var(--ink),0 2px 0 var(--ink),0 -2px 0 var(--ink)}
+.node[aria-pressed="true"] .id{color:var(--ink);background:var(--yellow);border:2px solid var(--ink);padding:2px 4px;text-shadow:none;top:38px}
+.node .who{position:absolute;bottom:34px;left:50%;width:39px;height:32px;margin-left:-20px;
+  animation:hop .6s steps(2) infinite alternate}
+@keyframes hop{to{transform:translateY(-3px)}}
+.info{display:flex;flex-direction:column;gap:10px}
+.info .card{cursor:default;min-height:72px;animation:none}
+.info .card:active{transform:none;box-shadow:3px 3px 0 var(--ink)}
+.info .go{min-height:52px;font-size:18px}
+.info .keys{display:none;margin:0;font:700 12px/1.4 var(--text);color:var(--ink)}
 
 /* 결과의 별 세 칸 (§13.4). 받은 것은 노랑, 못 받은 것은 회색 — 차례로 튀어나온다 */
 .sheet .stars{display:flex;gap:6px;flex-wrap:wrap}
@@ -374,3 +409,34 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 /* 시드 코드 입력 (§22.8) */
 .panel input.code{font:400 16px/1.2 var(--text);letter-spacing:2px;text-transform:uppercase;width:100%;
   padding:8px 10px;border:3px solid var(--ink);background:var(--white);color:var(--ink);border-radius:0}
+
+/* ── PC 배치 (§13.8) ───────────────────────────────────────────────
+   html.wide: 창이 가로로 넉넉하다(860×560 이상, 1.2:1 보다 넓음). 단계 선택을 옆으로 편다.
+   html.side: wide + 플레이 중. 캔버스는 왼쪽, HUD·각도·힌트·키보드 안내는 오른쪽 패널 */
+#side{display:none}
+html.side{--side:280px}
+html.side canvas{width:calc(100% - var(--side))}
+html.side #side{display:flex;flex-direction:column;justify-content:flex-end;position:absolute;top:0;right:0;bottom:0;
+  width:var(--side);box-sizing:border-box;padding:16px;border-left:4px solid var(--ink);
+  background:var(--deep) var(--stars,none) repeat;background-size:192px 192px}
+html.side .hud.top{left:auto;right:0;width:var(--side);box-sizing:border-box;flex-wrap:wrap;gap:10px;padding:16px 16px 0 20px}
+html.side .stage{flex:1 1 100%;order:-1;text-align:left}
+html.side .stage .sid{font-size:28px}
+html.side .stage .clamp{font-size:14px}
+html.side .hud .btn{flex:1 1 0}
+html.side #angle,html.side #hint{left:auto;right:16px;transform:none;top:150px;bottom:auto;
+  width:calc(var(--side) - 36px);max-width:none;box-sizing:border-box}
+html.side #xp{right:calc(var(--side) + 12px)}
+html.side #boss,html.side #toast,html.side .sheet{right:var(--side)}
+#keys{display:flex;flex-direction:column;gap:6px;padding:10px 12px;background:var(--paper);
+  border:3px solid var(--ink);box-shadow:3px 3px 0 var(--ink);font:700 12px/1.4 var(--text)}
+#keys b{font:400 14px/1 var(--display)}
+@media (pointer:coarse){#keys{display:none}}
+
+html.wide #picker{align-items:center}
+html.wide #picker>*{width:100%;max-width:1000px;box-sizing:border-box}
+html.wide .world{display:grid;grid-template-columns:minmax(0,calc((100vh - 240px) * 1.25)) 280px;gap:24px;
+  align-items:start;justify-content:center}
+html.wide .info .keys{display:block}
+html.side #turns,html.side #xp{top:12px}
+html.side #perks{top:60px}
