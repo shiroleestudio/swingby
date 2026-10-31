@@ -25,10 +25,9 @@ describe('데이터', () => {
     expect(() => messierOf(111)).toThrow();
   });
 
-  it('스테이지 몫과 인피니티 몫이 겹치지 않고 합치면 전부', () => {
-    const all = new Set([...STAGE_MESSIER, ...INFINITY_POOL]);
-    expect(all.size).toBe(MESSIER_COUNT);
-    expect(STAGE_MESSIER.length + INFINITY_POOL.length).toBe(MESSIER_COUNT);
+  it('스테이지를 뺀 뒤로는 인피니티가 110개 전부를 낸다 (§22.9)', () => {
+    expect(new Set(INFINITY_POOL).size).toBe(MESSIER_COUNT);
+    for (const n of STAGE_MESSIER) expect(INFINITY_POOL).toContain(n);
   });
 });
 

@@ -2,12 +2,11 @@
 
 import './ui/styles.css';
 
-import { allIds } from './levels/chapters.js';
 import { loadLevel } from './levels/registry.js';
 import {
-  isChapterLast, nextLevel, resumeLevel,
+  isChapterLast, nextLevel,
 } from './levels/progress.js';
-import { starFlags, starsOf } from './levels/stars.js';
+import { starFlags } from './levels/stars.js';
 import { FramePacer } from './game/pace.js';
 import { Camera } from './game/camera.js';
 import { ARENA_H, ARENA_W } from './core/boss.js';
@@ -119,40 +118,20 @@ const PARAMS = new URLSearchParams(location.search);
  */
 const TEST_TURNS = Math.min(9, Math.max(0, Math.floor(Number(PARAMS.get('turns')) || 0)));
 /**
- * `?open`: 모든 장·단계와 인피니티를 연다. 클리어 표시(✓)는 그대로다 — 열기만 한다.
+ * `?open`: 첫 실행에도 타이틀부터(바로 인피니티로 가지 않는다). 스테이지가 있던 때는 모든 장·단계를 열었다(§22.9).
  * `?open&turns=3` 처럼 함께 쓸 수 있다.
  */
 const TEST_OPEN = PARAMS.has('open');
 
 const screens = new Screens({
-  progress: {
-    cleared: (id) => save.cleared(id),
-    skipped: (id) => save.level(id).skipped,
-    allOpen: TEST_OPEN,
-  },
-  levelName: (id) => levelName(loadLevel(id)),
-  levelStats: (id) => {
-    const l = save.data.levels[id];
-    return { stars: l ? starsOf(l) : 0, best: l?.best_time ?? null };
-  },
   settings: save.data.settings,
   autoLangName: () => LANG_NAME[detectLang(browserLangs())],
-  // 스테이지: 이어서 할 단계가 있는 장의 단계 선택으로 (§13.1)
-  onStart: () => {
-    screens.syncChapter(resumeLevel({
-      cleared: (id) => save.cleared(id),
-      skipped: (id) => save.level(id).skipped,
-    }));
-    screens.showSelect();
-  },
   onInfinity: (mode, seed) => startInfinity(mode, seed),
   dailyInfo: () => { const d = dailyRecord(); return { date: shortDate(d.day), best: d.best }; },
   catalog: () => save.data.messier,
-  // 타이틀이 보이면 뒤에서 데모가 돌아야 한다 (§13.1). 단계 선택·설정에서 타이틀로
+  // 타이틀이 보이면 뒤에서 데모가 돌아야 한다 (§13.1). 설정·도감에서 타이틀로
   // 돌아올 때 전에는 멈춘 단계가 그대로 비쳤다
   onTitle: () => { if (!demo) replayDemo(); },
-  infinityOpen: () => TEST_OPEN || save.cleared('1-8'),   // 1장을 끝내면 열린다 (§22.8 방송판 준비, 전에는 6-1)
-  onPick: (id) => startPlay(id),
   onSettingChange: () => { applySettings(); save.touch(); },
   canOpenPrivacyOptions: () => ads.canOpenPrivacyOptions(),
   openPrivacyOptions: () => ads.openPrivacyOptions(),
@@ -425,9 +404,7 @@ function startPlay(id: string): void {
   session.bonusTurns = TEST_TURNS;
   loadInto(id);
   beginGlide();
-  screens.syncChapter(id);
-  screens.hideSelect();
-  screens.rememberIntro(id, session.level.meta.intro);
+  screens.hideScreens();
   screens.maybeShowIntro(session.level, save.data.seen_intros, (key) => {
     save.data.seen_intros.push(key);
     save.touch();
@@ -471,7 +448,7 @@ function startInfinity(mode: InfinityMode = 'random', seed?: number): void {
   panning = false;
   resize();
   snapToStart();
-  screens.hideSelect();
+  screens.hideScreens();
   screens.maybeShowIntro(session.level, save.data.seen_intros, (key) => {
     save.data.seen_intros.push(key);
     save.touch();
@@ -647,8 +624,6 @@ addEventListener('keydown', (e) => {
   if (e.ctrlKey || e.metaKey || e.altKey || e.repeat && e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
   const tag = (document.activeElement as HTMLElement | null)?.tagName;
   if (tag === 'SELECT' || tag === 'INPUT' || tag === 'TEXTAREA') return;
-  // 단계 선택 지도 (§13.2.2): ←/→ 로 별을 옮기고 Enter 로 출발. 버튼에 초점이 있으면 Enter 는 그 버튼 몫
-  if (!(tag === 'BUTTON' && (e.key === 'Enter' || e.key === ' ')) && screens.selectKey(e.key)) { e.preventDefault(); return; }
   if (demo || screens.overlayOpen || hints.open || !session.level) return;
   if (levelup.open) {
     // 레벨업 카드: 1·2·3 또는 Enter(첫 카드)
@@ -702,7 +677,7 @@ addEventListener('popstate', () => {
   // 힌트 시트가 열려 있으면 그것만 닫는다 — 전에는 시트와 멈춘 시계를 남긴 채 단계 선택이 떴다
   if (hints.open) hints.close();
   else if (!screens.goBack() && !demo) {
-    if (session.world) startDemo(); else screens.showSelect();
+    startDemo();
   }
   history.pushState({ depth: 1 }, '');
 });
@@ -752,7 +727,7 @@ hud.onRevive = async () => {
 // 인피니티에서 "뒤로"·단계 이름·결과의 두 번째 버튼은 타이틀로
 hud.onOpenPicker = () => {
   hud.hideResult();
-  if (session.world) startDemo(); else screens.showSelect();
+  startDemo();
 };
 hud.onNext = () => { void goNext(); };
 hud.onHints = () => hints.show();
@@ -793,7 +768,7 @@ async function goNext(): Promise<void> {
     skipped: (id: string) => save.level(id).skipped,
   };
   const next = nextLevel(session.level.id, p);
-  if (!next) { screens.showSelect(); return; }
+  if (!next) { startDemo(); return; }
 
   const L = loadLevel(next);
   const seen = save.data.seen_intros;
@@ -1085,8 +1060,7 @@ if (import.meta.env.DEV) {
 document.documentElement.style.setProperty('--stars', `url(${toDataUrl(starTile(3, 192, 192))})`);
 
 resize();
-// 첫 실행(어느 단계도 시도한 적 없음)은 타이틀을 건너뛰고 바로 1-1 — 웹 포털은 첫 몇 초에 판단한다 (§13.1, 2026-10)
-// save.level() 은 읽기만 해도 칸을 만들므로 "시도한 적 있음" 으로 본다
-const neverPlayed = Object.values(save.data.levels).every((l) => l.attempts === 0 && !l.cleared && !l.skipped);
-if (neverPlayed && !TEST_OPEN) startPlay('1-1'); else startDemo();
+// 스테이지는 2026-10-31 에 뺐다(§22.9) — 처음 온 사람(인피니티 소개 카드를 본 적 없음)은 바로 무작위 우주.
+// 웹 포털·토스는 첫 몇 초에 판단한다 (§13.1)
+if (!save.data.seen_intros.includes('infinity') && !TEST_OPEN) startInfinity('random'); else startDemo();
 requestAnimationFrame(frame);

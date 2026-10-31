@@ -5,14 +5,8 @@
 // 화면은 전부 DOM 오버레이다. 캔버스는 뒤에서 계속 돌고,
 // 타이틀에서는 그 캔버스가 데모를 재생한다 (§13.1).
 
-import { CHAPTERS, allIds, displayId } from '../levels/chapters.js';
-import { chapterOf, isChapterUnlocked, isUnlocked, leftToOpenNext } from '../levels/progress.js';
-import type { Progress } from '../levels/progress.js';
-import { MAX_STARS, starText } from '../levels/stars.js';
 import { introFor, seenKey } from './intro.js';
 import { LANGS, LANG_NAME, type Key, type LangSetting, t } from '../i18n/index.js';
-import { MAP_H, MAP_W, ZODIAC } from '../levels/zodiac.js';
-import { chapterName } from '../i18n/levels.js';
 import { img, introArt, messierIcon, rabbitIcon } from './art.js';
 import { MESSIER, MESSIER_COUNT } from '../tools-shared/messier.js';
 import { seedFromCode } from '../tools-shared/infinity.js';
@@ -22,7 +16,7 @@ import type { Level } from '../core/types.js';
 
 declare const __APP_VERSION__: string;
 
-export type Screen = 'title' | 'select' | 'play';
+export type Screen = 'title' | 'play';
 export type InfinityMode = 'daily' | 'random' | 'code';
 
 /** 개인정보처리방침은 스튜디오 허브 한 곳에만 둔다 — 판(itch·웹·앱)별 광고 차이도 거기서 나눠 적는다 */
@@ -35,10 +29,6 @@ const $ = (id: string): HTMLElement => {
 };
 
 export interface ScreenDeps {
-  progress: Progress;
-  levelName(id: string): string;
-  /** 단계의 별과 최고 비행 시간 (§13.2). 안 깼으면 별 0, 시간 null */
-  levelStats(id: string): { stars: number; best: number | null };
   settings: {
     sfx: boolean; haptics: boolean; bgm: boolean;
     glow: 'normal' | 'low'; reduce_motion: boolean; reduce_motion_set?: boolean;
@@ -55,7 +45,6 @@ export interface ScreenDeps {
   openPrivacyOptions?(): Promise<void>;
   /** 광고 제거 (§14.7). 샀거나 살 수 있을 때만 줄이 뜬다. 결제는 M12 */
   noAds?: { owned(): boolean; canBuy(): boolean; buy(): void };
-  onStart(): void;                 // 타이틀 → 스테이지(단계 선택)
   /** 인피니티 시작 (§22.3). daily 는 오늘의 우주, random 은 매번 새 판 */
   onInfinity(mode: InfinityMode, seed?: number): void;
   /** 오늘의 우주 고르기 판에 보일 것: 오늘 날짜(짧게)와 오늘 최고(없으면 0) */
@@ -64,38 +53,31 @@ export interface ScreenDeps {
   catalog(): Readonly<Record<string, string>>;
   /** 타이틀이 보일 때마다. 뒤의 데모가 돌고 있지 않으면 다시 돌린다 (§13.1) */
   onTitle?(): void;
-  /** 인피니티가 열렸는가. 6-1 을 깨면 열린다 (§22.3) */
-  infinityOpen(): boolean;
-  onPick(id: string): void;
   onSettingChange(): void;
 }
 
 export class Screens {
   private titleEl = $('title');
-  private pickerEl = $('picker');
   private settingsEl = $('settings');
   private introEl = $('intro');
   private catalogEl = $('catalog');
-  private chapter = 1;
   /** 설정을 어디서 열었는가. 뒤로 가기가 그리로 돌아간다 */
-  private settingsFrom: Screen = 'select';
+  private settingsFrom: Screen = 'title';
 
   constructor(private readonly d: ScreenDeps) {}
 
   get current(): Screen {
     if (!this.titleEl.hidden) return 'title';
-    if (!this.pickerEl.hidden) return 'select';
     return 'play';
   }
 
   get overlayOpen(): boolean {
-    return !this.titleEl.hidden || !this.pickerEl.hidden
+    return !this.titleEl.hidden
       || !this.settingsEl.hidden || !this.introEl.hidden || !this.catalogEl.hidden;
   }
 
   private hideAll(): void {
     this.titleEl.hidden = true;
-    this.pickerEl.hidden = true;
     this.settingsEl.hidden = true;
     this.catalogEl.hidden = true;
   }
@@ -107,10 +89,7 @@ export class Screens {
       <div class="spacer"></div>
       <div class="logo"><h1><span class="chrome">SPACE</span><span class="chrome">SURFER</span><span class="moon">${t('title.sub')}</span></h1></div>
       <div class="bar">
-        <button class="btn primary" data-a="start" type="button">${t('title.stage')}</button>
-        ${this.d.infinityOpen()
-          ? `<button class="btn next" data-a="infinity" type="button">${t('title.infinity')}</button>`
-          : `<button class="btn" type="button" disabled>${t('title.infinity')}<small>${t('title.infLocked', { id: displayId('1-8') })}</small></button>`}
+        <button class="btn primary" data-a="infinity" type="button">${t('title.infinity')}</button>
         <button class="btn" data-a="catalog" type="button">${t('title.catalog')}<small>${
           t('cat.count', { n: Object.keys(this.d.catalog()).length, max: MESSIER_COUNT })}</small></button>
         <div class="pair">
@@ -121,7 +100,6 @@ export class Screens {
       </div>
       <div class="spacer"></div>`;
     this.bind(this.titleEl, {
-      start: () => this.d.onStart(),
       infinity: () => this.showInfinityPick(),
       catalog: () => this.showCatalog(),
       settings: () => this.showSettings(),
@@ -205,142 +183,8 @@ export class Screens {
     this.introEl.hidden = false;
   }
 
-  // ── §13.2 단계 선택 — 별자리 지도 (§13.2.2) ────────────────────────────
-  showSelect(chapter?: number): void {
-    this.hideAll();
-    if (chapter !== undefined) this.chapter = chapter;
-    const p = this.d.progress;
-    const tabs = CHAPTERS.map((c) => {
-      const open = isChapterUnlocked(c.chapter, p);
-      return `<button class="tab" data-ch="${c.chapter}" type="button"
-        aria-selected="${c.chapter === this.chapter}" ${open ? '' : 'disabled'} aria-label="${
-          open ? t('chapter.label', { n: c.chapter, name: chapterName(c.chapter, c.name) })
-            : t('chapter.locked', { n: c.chapter })}">${c.chapter}</button>`;
-    }).join('');
-
-    const ch = CHAPTERS.find((c) => c.chapter === this.chapter) ?? CHAPTERS[0]!;
-    const starSum = ch.levels.reduce((n, id) => n + this.d.levelStats(id).stars, 0);
-    // 다음 장이 아직 잠겼으면 몇 칸 남았는지 (§13.2)
-    const left = leftToOpenNext(ch.chapter, p);
-    const note = left > 0
-      ? `<p class="unlocknote">${t('picker.unlockNote', { k: left, n: ch.chapter + 1 })}</p>` : '';
-
-    this.pickerEl.innerHTML = `
-      <div class="bar">
-        <button class="btn" data-a="title" type="button">${t('picker.toTitle')}</button>
-        <div class="spacer"></div>
-        <button class="btn" data-a="intro" type="button" aria-label="${t('picker.introAgain')}">?</button>
-        <button class="btn" data-a="settings" type="button">${t('picker.settings')}</button>
-      </div>
-      <h2>${img(rabbitIcon('idle'))}${t('picker.title')}<span class="sum">${
-        t('picker.stars', { n: starSum, max: ch.levels.length * MAX_STARS })}</span></h2>
-      <div class="tabs">${tabs}</div>
-      ${note}
-      <div class="world"></div>`;
-
-    this.bind(this.pickerEl, {
-      title: () => this.showTitle(),
-      settings: () => this.showSettings(),
-      intro: () => this.showChapterIntro(ch.levels[0]!),
-    });
-    for (const t of this.pickerEl.querySelectorAll<HTMLButtonElement>('.tab')) {
-      t.addEventListener('click', () => this.showSelect(Number(t.dataset['ch'])));
-    }
-    this.renderWorld();
-    this.pickerEl.hidden = false;
-  }
-
-  /** 장마다 고른 단계. 처음엔 아직 안 깬 첫 칸 — 토끼가 거기 서 있다 */
-  private picked: Record<number, string> = {};
-
-  private pickedIn(levels: readonly string[]): string {
-    const p = this.d.progress;
-    const had = this.picked[this.chapter];
-    if (had && levels.includes(had) && isUnlocked(had, p)) return had;
-    return levels.find((id) => isUnlocked(id, p) && !p.cleared(id))
-      ?? [...levels].reverse().find((id) => isUnlocked(id, p)) ?? levels[0]!;
-  }
-
-  /** 지도와 고른 단계 판. 별을 누르면 고르고, 고른 별을 한 번 더 누르면 출발 */
-  private renderWorld(): void {
-    const world = this.pickerEl.querySelector<HTMLElement>('.world');
-    if (!world) return;
-    const p = this.d.progress;
-    const ch = CHAPTERS.find((c) => c.chapter === this.chapter) ?? CHAPTERS[0]!;
-    const z = ZODIAC[ch.chapter];
-    const sel = this.pickedIn(ch.levels);
-    const state = (id: string): string =>
-      p.skipped(id) ? 'skipped' : p.cleared(id) ? 'cleared' : isUnlocked(id, p) ? 'open' : 'locked';
-
-    // 별자리 선: 양 끝 단계를 다 깼으면 밝게
-    const lines = (z?.lines ?? []).map(([a, b]) => {
-      const [ax, ay] = z!.stars[a]!, [bx, by] = z!.stars[b]!;
-      const on = p.cleared(ch.levels[a]!) && p.cleared(ch.levels[b]!);
-      return `<line x1="${ax}" y1="${ay}" x2="${bx}" y2="${by}" class="${on ? 'on' : ''}"/>`;
-    }).join('');
-    const nodes = ch.levels.map((id, i) => {
-      const [x, y] = z?.stars[i] ?? [10 + i * 18, MAP_H / 2];
-      const s = state(id);
-      return `<button class="node" data-id="${id}" data-state="${s}" type="button"
-        style="left:${x}%;top:${(y / MAP_H) * 100}%" aria-pressed="${id === sel}"
-        aria-label="${displayId(id)}" ${s === 'locked' ? 'disabled' : ''}>
-        ${id === sel ? img(rabbitIcon('idle'), '', 'px who') : ''}<i class="star"></i>
-        <span class="id">${displayId(id)}</span></button>`;
-    }).join('');
-
-    // 고른 단계 판 (§13.2): 이름·상태·별·최고 시간, 출발
-    const s = state(sel);
-    const done = p.cleared(sel);
-    const st = this.d.levelStats(sel);
-    const ex = done
-      ? `<span class="ex"><span class="stars">${starText(st.stars)}</span>${
-        st.best !== null ? `<span class="best">${t('card.best', { sec: st.best.toFixed(1) })}</span>` : ''}</span>`
-      : '';
-
-    world.innerHTML = `
-      <div class="map">
-        <div class="cname"><b>${t(`zodiac.${ch.chapter}` as Key)}</b><small>${
-          t('chapter.label', { n: ch.chapter, name: chapterName(ch.chapter, ch.name) })} · ${z?.latin ?? ''}</small></div>
-        <svg viewBox="0 0 ${MAP_W} ${MAP_H}" preserveAspectRatio="none" aria-hidden="true">${lines}</svg>
-        ${nodes}
-      </div>
-      <div class="info">
-        <div class="card" data-state="${s}">
-          <span class="id">${displayId(sel)}</span>
-          <span class="nm">${this.d.levelName(sel)}</span>
-          <span class="st${done ? ' done' : ''}">${t(`mark.${s}` as Key)}</span>
-          ${ex}
-        </div>
-        <button class="btn primary go" data-a="go" type="button">${t('picker.go')}</button>
-        <p class="keys">${t('picker.keys')}</p>
-      </div>`;
-
-    this.bind(world, { go: () => this.d.onPick(sel) });
-    for (const n of world.querySelectorAll<HTMLButtonElement>('.node')) {
-      n.addEventListener('click', () => {
-        const id = n.dataset['id']!;
-        if (id === sel) { this.d.onPick(id); return; }
-        this.picked[this.chapter] = id;
-        this.renderWorld();
-        world.querySelector<HTMLButtonElement>(`.node[data-id="${id}"]`)?.focus({ preventScroll: true });
-      });
-    }
-  }
-
-  /** 단계 선택 화면의 키보드 (§10.6): ←/→ 로 앞뒤 단계, Enter·Space 로 출발. 먹었으면 true */
-  selectKey(key: string): boolean {
-    if (this.pickerEl.hidden || !this.introEl.hidden || !this.settingsEl.hidden) return false;
-    const ch = CHAPTERS.find((c) => c.chapter === this.chapter) ?? CHAPTERS[0]!;
-    const sel = this.pickedIn(ch.levels);
-    if (key === 'Enter' || key === ' ') { this.d.onPick(sel); return true; }
-    const step = key === 'ArrowRight' || key === 'ArrowDown' ? 1 : key === 'ArrowLeft' || key === 'ArrowUp' ? -1 : 0;
-    if (!step) return false;
-    const next = ch.levels[ch.levels.indexOf(sel) + step];
-    if (next && isUnlocked(next, this.d.progress)) { this.picked[this.chapter] = next; this.renderWorld(); }
-    return true;
-  }
-
-  hideSelect(): void { this.hideAll(); }
+  /** 오버레이 화면을 모두 닫는다 — 플레이로 들어갈 때 */
+  hideScreens(): void { this.hideAll(); }
 
   // ── §13.2.1 새 요소 소개 카드 ─────────────────────────────────────────
   /** meta.intro 가 있고 아직 안 본 단계면 카드를 띄운다. 띄웠으면 true. */
@@ -352,17 +196,6 @@ export class Screens {
     this.showIntroCard(L.id, key);
     onSeen(mark);
     return true;
-  }
-
-  private showChapterIntro(firstId: string): void {
-    // ? 버튼: 이 장 첫 단계의 소개 카드를 다시 본다. 없으면 아무 일도 없다.
-    const key = this.introKeyCache[firstId];
-    if (key) this.showIntroCard(firstId, key);
-  }
-
-  private introKeyCache: Record<string, IntroKey> = {};
-  rememberIntro(id: string, key: IntroKey | undefined): void {
-    if (key) this.introKeyCache[id] = key;
   }
 
   private showIntroCard(levelId: string, key: IntroKey): void {
@@ -495,13 +328,11 @@ export class Screens {
    */
   private closeSettings(): void {
     this.settingsEl.hidden = true;
-    if (this.settingsFrom === 'title') this.showTitle();
-    else this.showSelect();
+    if (this.settingsFrom === 'title') this.showTitle();   // 플레이 중에 연 설정은 닫으면 플레이로
   }
 
   private hideAllButSettings(): void {
     this.titleEl.hidden = true;
-    this.pickerEl.hidden = true;
     this.catalogEl.hidden = true;
   }
 
@@ -515,7 +346,6 @@ export class Screens {
     }
     if (!this.catalogEl.hidden) { this.showTitle(); return true; }
     if (!this.settingsEl.hidden) { this.closeSettings(); return true; }
-    if (!this.pickerEl.hidden) { this.showTitle(); return true; }
     return false;
   }
 
@@ -526,13 +356,6 @@ export class Screens {
     }
   }
 
-  /** 장 탭을 현재 단계에 맞춘다. */
-  syncChapter(levelId: string): void {
-    this.chapter = chapterOf(levelId);
-    this.picked[this.chapter] = levelId;   // 지도에서 토끼가 방금 한 단계에 서 있다
-  }
-
-  static allIds = allIds;
 }
 
 /** "언어 · Language". 못 읽는 언어로 바뀌어도 자기 언어를 찾아 돌아올 수 있게 영어를 곁들인다 */

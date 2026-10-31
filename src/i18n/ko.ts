@@ -8,35 +8,12 @@ export const ko = {
 
   // §13.1 타이틀
   'title.sub': '달토끼',
-  'title.stage': '스테이지',
   'title.infinity': '인피니티',
-  'title.infLocked': '{id} 을 깨면 열려요',
   'title.settings': '설정',
 
-  // §13.2 단계 선택
-  'picker.title': '단계 선택',
   'picker.toTitle': '타이틀',
-  'picker.settings': '설정',
-  'picker.introAgain': '이 장의 새 요소 다시 보기',
-  'chapter.label': '{n}장 {name}',
-  'chapter.locked': '{n}장 잠김',
-  'mark.skipped': '↷ 건너뜀',
-  'mark.cleared': '✓ 클리어',
-  'mark.open': '미클리어',
-  'mark.locked': '잠김',
-  // §13.2 별과 기록
-  'picker.unlockNote': '{k}칸 더 깨면 {n}장이 열려요',
-  'picker.stars': '★ {n}/{max}',
-  'card.best': '{sec}초',
-  'picker.go': '출발',
-  'picker.keys': '← → 단계 고르기 · Enter 출발',
-  'zodiac.1': '양자리',
-  'zodiac.2': '황소자리',
-  'zodiac.3': '쌍둥이자리',
-  'zodiac.4': '게자리',
-  'zodiac.5': '사자자리',
-  'zodiac.6': '처녀자리',
-  'zodiac.7': '천칭자리',
+
+  // §13.8 PC 패널의 키보드 안내
   'keys.title': '키보드',
   'keys.aim': '← → 조준 · Shift 5°',
   'keys.launch': 'Space 발사',
@@ -44,7 +21,6 @@ export const ko = {
   'keys.retry': 'R 다시 · Esc 취소',
 
   // §13.3 HUD
-  'hud.levels': '단계',
   'hud.hint': '힌트',
   'hud.retry': '다시',
   'hud.angle': '각도 {deg}°',
@@ -116,7 +92,7 @@ export const ko = {
   'intro.turn': '분사',
   'intro.turn.body': '날아가는 중에 화면을 쓸어 넘기면 그 방향으로 꺾여요. 탭은 화면 왼쪽 반이면 로켓의 왼쪽으로, 오른쪽 반이면 로켓의 오른쪽으로. 한 번에 꺾이는 각도에는 한계가 있고, 그 범위가 우주선 앞에 점선으로 보여요. 횟수는 왼쪽 위에 있어요.',
   'intro.infinity': '인피니티',
-  'intro.infinity.body': '끝없는 우주에서 부딪히지 않고 오래 버티세요. 날다가 화면을 쓸면 그 방향으로, 화면 왼쪽·오른쪽을 탭하면 그쪽으로 꺾여요(분사). 당근은 경험치예요. 천체를 아슬아슬하게 스치면 경험치가 더 오르고, 다섯 번 스칠 때마다 분사 하나. 레벨이 오르면 능력을 하나 고르세요.',
+  'intro.infinity.body': '화면 어디든 누르고 좌우로 끌어 방향을 정하고, 손을 떼면 발사해요. 끝없는 우주에서 부딪히지 않고 오래 버티세요. 날다가 화면을 쓸면 그 방향으로, 화면 왼쪽·오른쪽을 탭하면 그쪽으로 꺾여요(분사). 당근은 경험치예요. 천체를 아슬아슬하게 스치면 경험치가 더 오르고, 다섯 번 스칠 때마다 분사 하나. 레벨이 오르면 능력을 하나 고르세요.',
   'intro.dock': '궤도 행성',
   'intro.dock.body': '초록 점선 원에 닿으면 붙잡혀 돌아요. 탭하면 그 자리에서 앞쪽으로 날아가요.',
   'inf.time': '{sec}초',

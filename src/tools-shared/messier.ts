@@ -169,5 +169,8 @@ export const STAGE_MESSIER_BY_CHAPTER: readonly (readonly number[])[] = [
   [45, 42, 31, 44], [13, 57, 51], [8, 20, 16], [1, 104, 81, 82], [33, 101, 64], [63, 83], [6, 11],
 ];
 export const STAGE_MESSIER: readonly number[] = STAGE_MESSIER_BY_CHAPTER.flat();
-export const INFINITY_POOL: readonly number[] = MESSIER
-  .map((m) => m.n).filter((n) => !STAGE_MESSIER.includes(n));
+/**
+ * 인피니티 바깥 링에서 나오는 천체. 2026-10-31 에 스테이지를 게임에서 빼며(§22.9) 110개 전부가 됐다.
+ * 위의 스테이지 몫은 단계 파일과 맞춰 보는 데에만 남아 있다 — 단계는 저장소에 남아 데모·검증에 쓴다
+ */
+export const INFINITY_POOL: readonly number[] = MESSIER.map((m) => m.n);
