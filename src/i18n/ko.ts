@@ -8,7 +8,7 @@ export const ko = {
 
   // §13.1 타이틀
   'title.sub': '달토끼',
-  'title.infinity': '인피니티',
+  'title.infinity': '시작하기',
   'title.settings': '설정',
 
   'picker.toTitle': '타이틀',
@@ -54,8 +54,8 @@ export const ko = {
   'cat.found': '{name} 발견!',
   'cat.again': '{name} — 이미 도감에 있어요',
   'cat.where': '처음 찾은 곳: {where}',
-  'cat.whereInf': '인피니티',
-  'cat.notYet': '아직 못 찾았어요. 스테이지의 정답 길 옆, 인피니티의 먼 곳에 숨어 있어요.',
+  'cat.whereInf': '우주',
+  'cat.notYet': '아직 못 찾았어요. 우주 먼 곳 어딘가에 숨어 있어요.',
   'cat.close': '닫기',
   'cat.intro': '천체를 스쳐 지나가면 도감에 모여요. 110개를 다 찾아 보세요.',
   'hud.boss': '보스',
@@ -91,7 +91,7 @@ export const ko = {
   'intro.wide.body': '한눈에 안 들어와요. 구석의 미니맵을 눌러 항로를 살펴보세요.',
   'intro.turn': '분사',
   'intro.turn.body': '날아가는 중에 화면을 쓸어 넘기면 그 방향으로 꺾여요. 탭은 화면 왼쪽 반이면 로켓의 왼쪽으로, 오른쪽 반이면 로켓의 오른쪽으로. 한 번에 꺾이는 각도에는 한계가 있고, 그 범위가 우주선 앞에 점선으로 보여요. 횟수는 왼쪽 위에 있어요.',
-  'intro.infinity': '인피니티',
+  'intro.infinity': '끝없는 우주',
   'intro.infinity.body': '화면 어디든 누르고 좌우로 끌어 방향을 정하고, 손을 떼면 발사해요. 끝없는 우주에서 부딪히지 않고 오래 버티세요. 날다가 화면을 쓸면 그 방향으로, 화면 왼쪽·오른쪽을 탭하면 그쪽으로 꺾여요(분사). 당근은 경험치예요. 천체를 아슬아슬하게 스치면 경험치가 더 오르고, 다섯 번 스칠 때마다 분사 하나. 레벨이 오르면 능력을 하나 고르세요.',
   'intro.dock': '궤도 행성',
   'intro.dock.body': '초록 점선 원에 닿으면 붙잡혀 돌아요. 탭하면 그 자리에서 앞쪽으로 날아가요.',
@@ -113,7 +113,7 @@ export const ko = {
   'inf.copied': '복사했어요. 붙여 넣어 자랑하세요',
   'inf.shareFailed': '공유할 수 없는 환경이에요',
   'inf.shareText': '스페이스서퍼 달토끼 오늘의 우주 {date} — {sec}초 버텼어요',
-  'inf.shareTextRandom': '스페이스서퍼 달토끼 인피니티 — {sec}초 버텼어요',
+  'inf.shareTextRandom': '스페이스서퍼 달토끼 — {sec}초 버텼어요',
   'inf.revive': '이어하기',
   'inf.reviveAd': '광고 보고 이어하기',
   'inf.revived': '이어하기 1회',
@@ -158,7 +158,7 @@ export const ko = {
   'inf.codeStart': '코드로 시작',
   'inf.codePh': '친구의 코드 6자리',
   'inf.codeBad': '코드가 맞지 않아요',
-  'inf.shareClear': '스페이스서퍼 달토끼 인피니티 — 15분 우주 정복! 스침 {g}회',
+  'inf.shareClear': '스페이스서퍼 달토끼 — 15분 우주 정복! 스침 {g}회',
   'perk.refill': '당근 한 입',
   'perk.refill.desc': '분사를 전부 보충해요',
   // §7.4: 5-1 에만 덧붙인다. 앞 공백까지 문구의 일부다 — 띄어 쓰는 언어만 넣는다
@@ -167,7 +167,7 @@ export const ko = {
   // §13.9 도움말
   'title.help': '도움말',
   'help.title': '도움말',
-  'help.intro': '인피니티에서 만나는 것들이에요. 누르면 설명이 나와요.',
+  'help.intro': '우주에서 만나는 것들이에요. 누르면 설명이 나와요.',
   'help.aim': '조준과 발사',
   'help.aim.body': '화면 어디든 누르고 좌우로 끌면 발사 방향이 돌아요. 손을 떼면 발사, 아래로 끌어 내리면 취소예요. 점선이 날아갈 길을 미리 보여 줘요.',
   'help.carrot': '당근',

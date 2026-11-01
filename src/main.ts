@@ -1008,10 +1008,10 @@ function draw(preview: { points: number[]; outcome: string } | null): void {
 // 전에는 따로 도는 두 번째 rAF 루프가 매 프레임 스타일을 썼다. 바뀔 때만 쓴다.
 const hudEls = [document.querySelector('.hud.top'), hud.hint, hud.angle, hud.turns, hud.xp, hud.perks, hud.graze, hud.boss, hud.toastEl] as HTMLElement[];
 let hudShown: boolean | null = null;
-/** 지금 화면에 맞는 곡 (§17 M18): 타이틀·스테이지는 calm, 인피니티는 drive, 보스전은 boss */
+/** 지금 화면에 맞는 곡 (§17 M18): 타이틀·비행은 calm, 보스전은 drive, 15분 최종 보스는 boss */
 function syncBgm(): void {
   if (!session.level) { sfx.bgm.play(null); return; }
-  sfx.bgm.play(demo || !session.world ? 'calm' : session.boss ? 'boss' : 'drive');
+  sfx.bgm.play(!session.boss ? 'calm' : session.boss.final ? 'boss' : 'drive');
 }
 
 function syncHudVisibility(): void {
