@@ -5,13 +5,13 @@
 // 화면은 전부 DOM 오버레이다. 캔버스는 뒤에서 계속 돌고,
 // 타이틀에서는 그 캔버스가 데모를 재생한다 (§13.1).
 
-import { introFor, seenKey } from './intro.js';
+import { HELP_KEYS, helpFor, introFor, seenKey } from './intro.js';
 import { LANGS, LANG_NAME, type Key, type LangSetting, t } from '../i18n/index.js';
-import { img, introArt, messierIcon, rabbitIcon } from './art.js';
+import { helpArt, img, introArt, messierIcon } from './art.js';
 import { MESSIER, MESSIER_COUNT } from '../tools-shared/messier.js';
 import { seedFromCode } from '../tools-shared/infinity.js';
 import { messierLabel, messierLineOf } from '../i18n/messier.js';
-import type { IntroKey } from './intro.js';
+import type { HelpKey, IntroKey } from './intro.js';
 import type { Level } from '../core/types.js';
 
 declare const __APP_VERSION__: string;
@@ -90,8 +90,11 @@ export class Screens {
       <div class="logo"><h1><span class="chrome">SPACE</span><span class="chrome">SURFER</span><span class="moon">${t('title.sub')}</span></h1></div>
       <div class="bar">
         <button class="btn primary" data-a="infinity" type="button">${t('title.infinity')}</button>
-        <button class="btn" data-a="catalog" type="button">${t('title.catalog')}<small>${
-          t('cat.count', { n: Object.keys(this.d.catalog()).length, max: MESSIER_COUNT })}</small></button>
+        <div class="pair">
+          <button class="btn" data-a="catalog" type="button">${t('title.catalog')}<small>${
+            t('cat.count', { n: Object.keys(this.d.catalog()).length, max: MESSIER_COUNT })}</small></button>
+          <button class="btn" data-a="help" type="button">${t('title.help')}</button>
+        </div>
         <div class="pair">
           <button class="btn" data-a="settings" type="button">${t('title.settings')}</button>
           <button class="btn" data-a="language" type="button">${t('set.language')}${
@@ -102,6 +105,7 @@ export class Screens {
     this.bind(this.titleEl, {
       infinity: () => this.showInfinityPick(),
       catalog: () => this.showCatalog(),
+      help: () => this.showHelp(),
       settings: () => this.showSettings(),
       language: () => this.showLanguage(),
     });
@@ -141,7 +145,7 @@ export class Screens {
     this.introEl.hidden = false;
   }
   /** 소개 판을 닫으면 어디로 — 고르기 판은 타이틀로, 도감 상세는 도감으로, 새 요소 카드는 그 자리에 */
-  private introBack: 'title' | 'catalog' | null = null;
+  private introBack: 'title' | 'catalog' | 'help' | null = null;
 
   // ── §22.7 메시에 도감 ───────────────────────────────────────────────
   showCatalog(): void {
@@ -180,6 +184,41 @@ export class Screens {
       ${has ? `<p class="dim">${t('cat.where', { where: where === 'infinity' ? t('cat.whereInf') : where })}</p>` : ''}
       <button class="btn primary" data-a="ok" type="button">${t('cat.close')}</button></div>`;
     this.bind(this.introEl, { ok: () => { this.introEl.hidden = true; this.showCatalog(); } });
+    this.introEl.hidden = false;
+  }
+
+  // ── §13.9 도움말 ──────────────────────────────────────────────────────
+  /** 소개 카드를 모아 둔 화면. 도감과 같은 자리(#catalog)를 쓴다 */
+  showHelp(): void {
+    this.hideAll();
+    const cells = HELP_KEYS.map((k, i) => {
+      const { title } = helpFor(k);
+      return `<button class="hcell" style="--i:${i}" data-k="${k}" type="button">
+        <span class="art">${img(helpArt(k), '')}</span><span class="nm">${title}</span></button>`;
+    }).join('');
+    this.catalogEl.innerHTML = `
+      <div class="bar"><button class="btn" data-a="back" type="button">${t('set.back')}</button>
+        <div class="spacer"></div></div>
+      <h2>${t('help.title')}</h2>
+      <p class="catnote">${t('help.intro')}</p>
+      <div class="hcells">${cells}</div>`;
+    this.bind(this.catalogEl, { back: () => this.showTitle() });
+    for (const c of this.catalogEl.querySelectorAll<HTMLButtonElement>('.hcell')) {
+      c.addEventListener('click', () => this.showHelpCard(c.dataset['k'] as HelpKey));
+    }
+    this.catalogEl.hidden = false;
+  }
+
+  private showHelpCard(key: HelpKey): void {
+    const { title, body } = helpFor(key);
+    this.introBack = 'help';
+    this.catalogEl.hidden = true;
+    this.introEl.className = 'sheet';
+    this.introEl.innerHTML = `<div class="panel">
+      <div class="art">${img(helpArt(key), title)}</div>
+      <h2>${title}</h2><p>${body}</p>
+      <button class="btn primary" data-a="ok" type="button">${t('cat.close')}</button></div>`;
+    this.bind(this.introEl, { ok: () => { this.introEl.hidden = true; this.showHelp(); } });
     this.introEl.hidden = false;
   }
 
@@ -342,6 +381,7 @@ export class Screens {
       this.introEl.hidden = true;
       if (this.introBack === 'title') this.showTitle();
       else if (this.introBack === 'catalog') this.showCatalog();
+      else if (this.introBack === 'help') this.showHelp();
       return true;
     }
     if (!this.catalogEl.hidden) { this.showTitle(); return true; }

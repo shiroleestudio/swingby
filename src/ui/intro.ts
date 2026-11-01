@@ -1,6 +1,6 @@
 // 새 요소 소개 카드. docs/PLAN.md §7.4, §13.2.1
 //
-// 장의 첫 단계에 처음 들어갈 때 한 번만 보여준다. 다시 보기는 단계 선택의 ? 버튼.
+// 인피니티를 처음 열 때 한 번 보여준다. 다시 보기는 타이틀의 [도움말](§13.9) — 같은 카드를 모아 둔다.
 
 import { type Key, t } from '../i18n/index.js';
 
@@ -46,4 +46,26 @@ export function introFor(levelId: string, key: IntroKey): { title: string; body:
  */
 export function seenKey(levelId: string, key: IntroKey): string {
   return EXTRA[levelId] ? `${key}@${levelId}` : key;
+}
+
+/** 도움말에만 있는 카드 — 스테이지가 가르치던 것 중 인피니티에서 새로 쓰는 것 (§13.9) */
+export type HelpKey = IntroKey | 'aim' | 'carrot' | 'graze' | 'levelup' | 'boss';
+
+const HELP_TEXT: Readonly<Record<Exclude<HelpKey, IntroKey>, readonly [Key, Key]>> = {
+  aim: ['help.aim', 'help.aim.body'],
+  carrot: ['help.carrot', 'help.carrot.body'],
+  graze: ['help.graze', 'help.graze.body'],
+  levelup: ['help.levelup', 'help.levelup.body'],
+  boss: ['help.boss', 'help.boss.body'],
+};
+
+/** 도움말 칸 순서: 조작 → 우주에 있는 것 → 인피니티의 규칙. 스테이지에만 있던 "넓은 맵" 은 뺀다 */
+export const HELP_KEYS: readonly HelpKey[] = [
+  'aim', 'turn', 'planet', 'rock', 'hole', 'ufo', 'orbit', 'dock', 'carrot', 'graze', 'levelup', 'boss',
+];
+
+export function helpFor(key: HelpKey): { title: string; body: string } {
+  if (key in TEXT) return introFor('', key as IntroKey);
+  const [title, body] = HELP_TEXT[key as Exclude<HelpKey, IntroKey>];
+  return { title: t(title), body: t(body) };
 }

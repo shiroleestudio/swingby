@@ -394,3 +394,13 @@ html.side #boss,html.side #toast,html.side .sheet{right:var(--side)}
 
 html.side #turns,html.side #xp{top:12px}
 html.side #perks{top:60px}
+
+/* 도움말 (§13.9): 소개 카드 그림을 세 칸씩 */
+.hcells{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:420px;width:100%}
+.hcell{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 4px 8px;cursor:pointer;
+  background:var(--paper);border:3px solid var(--ink);box-shadow:3px 3px 0 var(--ink);border-radius:0;color:var(--ink);
+  animation:pop .3s ease-out both;animation-delay:calc(var(--i,0) * 28ms)}
+.hcell:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.hcell .art{height:44px;display:flex;align-items:center;justify-content:center}
+.hcell .art img{width:72px;height:40px;object-fit:contain;image-rendering:pixelated}
+.hcell .nm{font:700 12px/1.25 var(--text);text-align:center;text-wrap:balance}

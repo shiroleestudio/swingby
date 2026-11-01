@@ -8,8 +8,8 @@ import { fromRows } from '../render/sprites/pixel.js';
 import type { OfferKind } from '../tools-shared/perks.js';
 import { messierArt } from '../render/sprites/messier.js';
 import { messierOf } from '../tools-shared/messier.js';
-import { blackhole, dockArt, moon, planet, rock } from '../render/sprites/world.js';
-import type { IntroKey } from './intro.js';
+import { blackhole, dockArt, moon, mothership, planet, rock } from '../render/sprites/world.js';
+import type { HelpKey, IntroKey } from './intro.js';
 
 const memo = new Map<string, string>();
 const once = (key: string, make: () => string): string => {
@@ -36,6 +36,16 @@ export function introArt(key: IntroKey): string {
               : key === 'dock' ? dockArt()
               : moon(18),
   ));
+}
+
+/** 도움말 칸의 그림 (§13.9). 소개 카드가 있는 것은 그 그림 그대로 */
+export function helpArt(key: HelpKey): string {
+  if (key === 'aim') return rabbitIcon('aim');
+  if (key === 'graze') return rabbitIcon('win');
+  if (key === 'carrot') return introArt('infinity');
+  if (key === 'levelup') return perkIcon('boost');
+  if (key === 'boss') return once('help:boss', () => toDataUrl(mothership(0)));
+  return introArt(key);
 }
 
 export function img(src: string, alt = '', cls = 'px'): string {
