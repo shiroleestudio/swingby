@@ -101,6 +101,7 @@ export const ja: Dict = {
   'inf.newBestDaily': '今日のベスト更新！',
   'inf.share': 'シェア',
   'inf.rank': 'ランキング',
+  'inf.score': 'ランキングスコア {n}',
   'inf.copied': 'コピーしました。貼り付けて自慢しよう',
   'inf.shareFailed': 'ここではシェアできません',
   'inf.shareText': 'スペースサーファー 月うさぎ 今日の宇宙 {date} — {sec}秒 耐えました',

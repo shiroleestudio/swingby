@@ -101,6 +101,7 @@ export const en: Dict = {
   'inf.newBestDaily': "Today's best!",
   'inf.share': 'Share',
   'inf.rank': 'Ranking',
+  'inf.score': 'Ranking score {n}',
   'inf.copied': 'Copied. Paste it to brag',
   'inf.shareFailed': "Can't share here",
   'inf.shareText': "Space Surfer: Moon Rabbit · Today's Universe {date} — I lasted {sec}s",

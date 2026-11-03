@@ -27,7 +27,7 @@ import { Save } from './save/save.js';
 import { Audio } from './audio/sfx.js';
 import { type AdProvider, FreeHintProvider, NoAdProvider, type RewardPlacement } from './platform/ads.js';
 import { buildTarget, detect, pickAdProvider, shareUrl } from './platform/capabilities.js';
-import { IS_TOSS, applyTossInsets, closeApp, submitScore } from './platform/toss.js';
+import { IS_TOSS, applyTossInsets, closeApp, submitScore, tossScore } from './platform/toss.js';
 import {
   type AdState, afterClear, afterInfinityRun, afterInterstitial, afterRewarded, forNewSession,
   shouldShowInfinityInterstitial, shouldShowInterstitial,
@@ -813,7 +813,7 @@ function recordOutcome(): void {
     if (sec > rec.best) rec.best = sec;
     save.touch();
     infResult = { sec, best: rec.best, isBest, grazes: session.grazes, combo: session.maxCombo, cleared: session.cleared };
-    if (IS_TOSS) void submitScore(sec);         // 토스 게임센터 순위표 (§15.7). 판이 끝날 때만
+    if (IS_TOSS) void submitScore(tossScore(sec, session.grazes));         // 토스 게임센터 순위표 (§15.7). 판이 끝날 때만
     return;
   }
   const l = save.level(session.level.id);

@@ -33,17 +33,25 @@ export async function applyTossInsets(root: HTMLElement): Promise<void> {
 const X_BUTTON = 44;
 
 /**
+ * 순위표 점수 = 버틴 초 × 10 + 스침 × 10 (정수, 단위 "점"). 15분을 버티면 판이 끝나 누구나 900초가
+ * 되므로, 클리어한 사람끼리는 스침으로 줄을 세운다 (§15.7, 사용자 결정 2026-11-03)
+ */
+export function tossScore(sec: number, grazes: number): number {
+  return Math.round(sec * 10) + grazes * 10;
+}
+
+/**
  * 게임센터 순위표에 점수를 낸다. 판이 끝날 때만 부른다(진입 직후에 부르면 프로필 화면과 겹친다).
  * 같은 값은 다시 보내지 않는다 — 브리지를 짧은 시간에 여러 번 부르지 않게.
  */
 let lastScore = '';
-export async function submitScore(sec: number): Promise<void> {
-  const score = sec.toFixed(1);
-  if (score === lastScore) return;
-  lastScore = score;
-  const s = await load();
-  if (!s) return;
-  try { await s.submitGameCenterLeaderBoardScore({ score }); } catch { /* 순위표는 덤이다 */ }
+export async function submitScore(score: number): Promise<void> {
+  const s = String(score);
+  if (s === lastScore) return;
+  lastScore = s;
+  const k = await load();
+  if (!k) return;
+  try { await k.submitGameCenterLeaderBoardScore({ score: s }); } catch { /* 순위표는 덤이다 */ }
 }
 
 /** 게임센터 순위표를 연다. 열리는 동안 게임은 백그라운드가 된다 */

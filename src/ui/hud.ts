@@ -10,7 +10,7 @@ import { levelHint, levelName } from '../i18n/levels.js';
 import { displayId } from '../levels/chapters.js';
 import { heartIcon, img, perkIcon, rabbitIcon } from './art.js';
 import { PERK_KINDS } from '../tools-shared/perks.js';
-import { IS_TOSS, openLeaderboard } from '../platform/toss.js';
+import { IS_TOSS, openLeaderboard, tossScore } from '../platform/toss.js';
 
 /** §13.4 결과 화면 문구의 키. 성공에는 조언이 없다 */
 export const RESULT: Readonly<Record<Outcome, readonly [Key, Key | null]>> = {
@@ -278,6 +278,7 @@ export class Hud {
     this.result.innerHTML = `<div class="panel">
       <div class="head">${img(rabbitIcon(isBest || info.cleared ? 'win' : 'sad'))}<h2></h2></div>
       <p class="msg"></p>
+      ${IS_TOSS ? `<p class="tapnote">${t('inf.score', { n: tossScore(sec, info.grazes) })}</p>` : ''}
       <p class="tapnote">${t('inf.statsGraze', { g: info.grazes, c: info.combo })}${info.code ? ` · ${t('inf.code', { code: info.code })}` : ''}</p>
       <div class="row">${info.cleared ? '' : reviveBtn}
         <button class="btn primary" data-a="retry" type="button">${t('result.retry')}</button>
