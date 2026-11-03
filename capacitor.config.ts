@@ -3,20 +3,15 @@
 // 웹 자산을 그대로 WebView 로 감싼다. **게임 코드는 바뀌지 않는다.**
 //
 // android/ 는 `npx cap add android` 가 만드는 생성물이라 git 에서 제외한다.
-// 손으로 고친 설정은 여기와 scripts/ 의 패치로 재현 가능하게 둔다.
-//
-// 앱 ID 는 출시 전에 사용자와 확정한다 (§15.2).
+// 손으로 고친 설정(아이콘·스플래시·버전·서명)은 tools/build-android.mjs 가
+// 매번 다시 입힌다. 그래서 android/ 를 지우고 다시 만들어도 같은 앱이 나온다.
+import type { CapacitorConfig } from '@capacitor/cli';
 
-// @capacitor/cli 는 아직 설치돼 있지 않다(M12 에서 사용자가 넣는다). 타입을
-// import 하면 지금 tsc 와 CI 가 깨지므로 구조만 적는다 — Capacitor CLI 는
-// 이 파일의 기본 내보내기를 그대로 읽는다.
-const config = {
-  appId: 'com.example.swingby',      // ← 출시 전 확정
+const config: CapacitorConfig = {
+  appId: 'com.shiroleestudio.swingby',   // 내부 이름. 한 번 올리면 바꿀 수 없다 (§15.2)
   appName: '스페이스서퍼 달토끼',
-  webDir: 'dist',
+  webDir: 'build/app/site',              // npm run build:android 가 VITE_TARGET=app 으로 만든다
   android: {
-    // 구형 WebView 가 유일한 호환성 위험이다. 빌드 타깃도 ES2020 으로 낮춰 뒀다
-    // (vite.config.ts). M12 점검표에 구형 기기 확인이 들어 있다.
     allowMixedContent: false,
   },
   server: {

@@ -39,7 +39,7 @@ export function detect(): Capabilities {
 export async function pickAdProvider(cap: Capabilities, hooks: H5Hooks): Promise<AdProvider> {
   const mode = mockModeFromQuery(location.search);
   if (mode === 'none') return new NoAdProvider();
-  // itch.io 빌드: 광고 없이 힌트를 준다 (§15.6). 토스 빌드도 광고를 붙이기 전까지는 같다 (§15.7)
+  // itch.io 빌드: 광고 없이 힌트를 준다 (§15.6). 토스·안드로이드 앱도 광고를 붙이기 전까지는 같다 (§15.7, §15.2)
   if (buildTarget() !== 'web') return new FreeHintProvider();
 
   if (import.meta.env.DEV) {
@@ -65,12 +65,12 @@ export async function pickAdProvider(cap: Capabilities, hooks: H5Hooks): Promise
  * 동작한다 — 그게 정상 상태다(§14.1).
  */
 /**
- * 빌드 대상. `VITE_TARGET=itch` 로 itch.io 용(`npm run build:itch`), `VITE_TARGET=toss` 로
- * 앱인토스용(`npm run build:toss`)을 만든다. 없으면 우리 웹
+ * 빌드 대상. `VITE_TARGET=itch` 로 itch.io 용(`npm run build:itch`), `toss` 로 앱인토스용
+ * (`npm run build:toss`), `app` 으로 안드로이드 앱(`npm run build:android`)을 만든다. 없으면 우리 웹
  */
-export function buildTarget(): 'web' | 'itch' | 'toss' {
+export function buildTarget(): 'web' | 'itch' | 'toss' | 'app' {
   const v = (import.meta.env as Record<string, string | undefined>)['VITE_TARGET'];
-  return v === 'itch' || v === 'toss' ? v : 'web';
+  return v === 'itch' || v === 'toss' || v === 'app' ? v : 'web';
 }
 
 /**

@@ -226,6 +226,8 @@ export const ko = {
   'set.credits': '만든 것',
   'set.oss': '오픈소스 고지',
   'set.ossNote': '이 게임은 오픈소스 라이브러리를 쓰지 않습니다. 글꼴은 Galmuri(이민서)와 Fusion Pixel Font(TakWolf)이며 SIL Open Font License 를 따릅니다.',
+  'set.ossApp': '단, 앱 버전은 Capacitor(Ionic, MIT License)로 감쌌습니다.',
+  'set.ossToss': '단, 토스 버전은 앱인토스 SDK(Apache License 2.0)를 씁니다.',
   'set.version': '버전',
 } as const;
 

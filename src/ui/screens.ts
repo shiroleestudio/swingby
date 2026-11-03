@@ -13,6 +13,7 @@ import { seedFromCode } from '../tools-shared/infinity.js';
 import { messierLabel, messierLineOf } from '../i18n/messier.js';
 import type { HelpKey, IntroKey } from './intro.js';
 import type { Level } from '../core/types.js';
+import { IS_APP } from '../platform/app.js';
 import { IS_TOSS } from '../platform/toss.js';
 
 declare const __APP_VERSION__: string;
@@ -305,7 +306,7 @@ export class Screens {
           <a class="btn" href="${PRIVACY_URL}" target="_blank" rel="noopener">${t('set.view')}</a></div>`}
         <div class="row2"><span class="label">${t('set.credits')}</span>
           <span class="val dim">${t('set.oss')}</span></div>
-        <p class="tapnote">${t('set.ossNote')}</p>
+        <p class="tapnote">${t('set.ossNote')}${IS_APP ? ' ' + t('set.ossApp') : IS_TOSS ? ' ' + t('set.ossToss') : ''}</p>
         <div class="row2"><span class="label">${t('set.version')}</span>
           <span class="val">${__APP_VERSION__}</span></div>
       </div>`;

@@ -1,0 +1,65 @@
+# 구글 플레이 업로드용 .aab 를 만든다. docs/PLAN.md §15.2
+#
+# 손으로 돌린다: Actions → "안드로이드 빌드" → Run workflow.
+# 끝나면 실행 화면 아래 Artifacts 에 space-surfer-moon-rabbit-aab 가 생긴다.
+#
+# 서명: 저장소 Settings → Secrets and variables → Actions 에 넷을 넣으면 업로드 키로 서명한다.
+#   ANDROID_KEYSTORE_B64       업로드 키(.jks)를 base64 로 바꾼 글
+#   ANDROID_KEYSTORE_PASSWORD  키 저장소 비밀번호
+#   ANDROID_KEY_ALIAS          키 별칭
+#   ANDROID_KEY_PASSWORD       키 비밀번호
+# 없으면 서명 없는 .aab 가 나온다(플레이에는 못 올림). 키 파일은 저장소에 넣지 않는다 (§0.8).
+
+name: 안드로이드 빌드
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  aab:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - run: npm ci
+
+      - name: 검사·테스트
+        run: |
+          npm run check
+          npm test
+
+      - name: 업로드 키 풀기
+        env:
+          KEY_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+        run: |
+          if [ -n "$KEY_B64" ]; then
+            echo "$KEY_B64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+            echo "ANDROID_KEYSTORE=$RUNNER_TEMP/upload.jks" >> "$GITHUB_ENV"
+          fi
+
+      # ubuntu-latest 에는 안드로이드 SDK 가 깔려 있다(ANDROID_HOME)
+      - name: 빌드
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: npm run build:android
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: space-surfer-moon-rabbit-aab
+          path: build/app/space-surfer-moon-rabbit.aab
+          retention-days: 30

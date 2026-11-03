@@ -27,6 +27,7 @@ import { Save } from './save/save.js';
 import { Audio } from './audio/sfx.js';
 import { type AdProvider, FreeHintProvider, NoAdProvider, type RewardPlacement } from './platform/ads.js';
 import { buildTarget, detect, pickAdProvider, shareUrl } from './platform/capabilities.js';
+import { onBackButton } from './platform/app.js';
 import { IS_TOSS, applyTossInsets, closeApp, submitScore, tossScore } from './platform/toss.js';
 import {
   type AdState, afterClear, afterInfinityRun, afterInterstitial, afterRewarded, forNewSession,
@@ -674,15 +675,23 @@ addEventListener('keydown', (e) => {
 
 // 브라우저 뒤로 가기 → 화면 한 단계 뒤로 (§15.2 의 흐름을 웹으로)
 history.replaceState({ depth: 0 }, '');
-addEventListener('popstate', () => {
+/** 한 단계 뒤로. 타이틀이라 더 갈 곳이 없으면 거짓 */
+function backStep(): boolean {
   // 힌트 시트가 열려 있으면 그것만 닫는다 — 전에는 시트와 멈춘 시계를 남긴 채 단계 선택이 떴다
   if (hints.open) hints.close();
   else if (!screens.goBack()) {
-    if (!demo) startDemo();
-    else if (IS_TOSS) { void closeApp(); return; }   // 토스: 타이틀에서 뒤로 가기 = 미니앱 닫기 (§15.7)
+    if (demo) return false;
+    startDemo();
   }
+  return true;
+}
+addEventListener('popstate', () => {
+  // 토스: 타이틀에서 뒤로 가기 = 미니앱 닫기 (§15.7)
+  if (!backStep() && IS_TOSS) { void closeApp(); return; }
   history.pushState({ depth: 1 }, '');
 });
+// 안드로이드 앱: 뒤로 가기 버튼을 직접 받는다. 타이틀에서 누르면 앱을 닫는다 (§15.2)
+void onBackButton(backStep);
 history.pushState({ depth: 1 }, '');
 
 // ── 생명주기 ────────────────────────────────────────────────────────────

@@ -211,5 +211,7 @@ export const ja: Dict = {
   'set.credits': 'クレジット',
   'set.oss': 'オープンソースライセンス',
   'set.ossNote': 'このゲームはオープンソースライブラリを使用していません。フォントは Galmuri(Lee Minseo)と Fusion Pixel Font(TakWolf)で、SIL Open Font License に従います。',
+  'set.ossApp': 'ただし、アプリ版は Capacitor(Ionic、MIT License)を使用しています。',
+  'set.ossToss': 'ただし、Toss 版は Apps in Toss SDK(Apache License 2.0)を使用しています。',
   'set.version': 'バージョン',
 };

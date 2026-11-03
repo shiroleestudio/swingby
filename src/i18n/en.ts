@@ -211,5 +211,7 @@ export const en: Dict = {
   'set.credits': 'Credits',
   'set.oss': 'Open Source Notices',
   'set.ossNote': 'This game uses no open-source libraries. Fonts: Galmuri by Lee Minseo and Fusion Pixel Font by TakWolf, under the SIL Open Font License.',
+  'set.ossApp': 'The app version, however, is wrapped with Capacitor by Ionic, under the MIT License.',
+  'set.ossToss': 'The Toss version, however, uses the Apps in Toss SDK, under the Apache License 2.0.',
   'set.version': 'Version',
 };

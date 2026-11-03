@@ -211,5 +211,7 @@ export const zh: Dict = {
   'set.credits': '制作信息',
   'set.oss': '开源声明',
   'set.ossNote': '本游戏未使用任何开源库。字体为 Galmuri(Lee Minseo)与 Fusion Pixel Font(TakWolf)，遵循 SIL Open Font License。',
+  'set.ossApp': '但应用版使用 Capacitor(Ionic，MIT License)。',
+  'set.ossToss': '但 Toss 版使用 Apps in Toss SDK(Apache License 2.0)。',
   'set.version': '版本',
 };

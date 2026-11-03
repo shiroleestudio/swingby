@@ -1,7 +1,7 @@
 {
   "name": "swingby",
   "private": true,
-  "version": "0.7.0",
+  "version": "0.7.1",
   "engines": {
     "node": ">=22"
   },
@@ -24,9 +24,12 @@
     "fonts": "python3 tools/subset-fonts.py",
     "build:itch": "node tools/build-itch.mjs",
     "build:toss": "node tools/build-toss.mjs",
+    "build:android": "node tools/build-android.mjs",
     "survive": "tsx tools/inf-survive.ts"
   },
   "devDependencies": {
+    "@capacitor/android": "8.6.0",
+    "@capacitor/cli": "8.6.0",
     "@types/node": "^26.6.1",
     "tsx": "^4.20.6",
     "typescript": "^7.0.2",
@@ -34,6 +37,8 @@
     "vitest": "^5.0.1"
   },
   "dependencies": {
-    "@apps-in-toss/web-framework": "3.9.0"
+    "@apps-in-toss/web-framework": "3.9.0",
+    "@capacitor/app": "8.1.2",
+    "@capacitor/core": "8.6.0"
   }
 }

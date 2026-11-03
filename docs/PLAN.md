@@ -1278,7 +1278,10 @@ v4의 Godot 익스포트 자리다. Capacitor는 웹 자산을 WebView로 감싸
 
 - **Android를 먼저** 빌드한다. iOS는 Mac과 Xcode 환경이 준비되면 추가하며, 그때 게임 코드 변경 없이 플랫폼 폴더만 늘어나도록 유지한다.
 - `npx cap add android` → `android/`가 생긴다. **이 폴더는 생성물이므로 git에서 제외**하고, 손으로 고친 설정(권한, 방향 고정, 스플래시)은 `capacitor.config.ts`와 재현 가능한 패치로 둔다.
-- 절차: `npm run build` → `npx cap sync` → Android Studio에서 실행·서명.
+- 절차: `npm run build:android`(`tools/build-android.mjs`, VITE_TARGET=app) — 웹 자산을 `build/app/site` 로 빌드(서비스 워커 뺌) → `android/` 가 없으면 `cap add` → `cap sync` → 아이콘·스플래시(`tools/android-res.ts`, 게임 스프라이트로 그림) → versionCode(0.7.1 → 701)·versionName·세로 고정·서명 설정을 다시 입힘 → 안드로이드 SDK 가 있으면 `gradlew bundleRelease` 로 `build/app/space-surfer-moon-rabbit.aab`. (2026-11-03)
+- 컨테이너에는 SDK 가 없어 .aab 는 GitHub Actions **"안드로이드 빌드"**(`.github/workflows/android.yml`, 손으로 실행)가 만든다. 업로드 키는 시크릿 `ANDROID_KEYSTORE_B64`·`ANDROID_KEYSTORE_PASSWORD`·`ANDROID_KEY_ALIAS`·`ANDROID_KEY_PASSWORD` 로만 들어간다(§0.8). 플레이 앱 서명을 쓰므로 업로드 키를 잃어도 콘솔에서 재설정할 수 있다.
+- 앱 빌드는 광고 없이 힌트·이어하기·다시 뽑기를 준다(`FreeHintProvider`, AdMob 은 명의를 정한 뒤). 안드로이드 뒤로 가기 버튼은 `src/platform/app.ts` 가 받아 웹의 뒤로 가기와 같은 단계를 밟고, 타이틀에서는 앱을 닫는다.
+- 첫 출시 목적은 구글 플레이 등급(IARC)이다 — 앱인토스 등급분류(§15.7)에 스토어 링크가 필요하다. 개인 계정은 테스터 12명·14일 비공개 테스트 뒤에 프로덕션에 올릴 수 있다.
 - 설정: 세로 고정(`android:screenOrientation="portrait"`), 전체 화면, `webContentsDebuggingEnabled`는 디버그 빌드에서만.
 - 앱 이름 "스페이스서퍼 달토끼"(2026-10-13, 처음엔 "스윙바이" — 스토어에 같은 이름이 많아 바꿈), 앱 ID `com.shiroleestudio.swingby`(사업용 계정 shiroleestudio@gmail.com 에서 따옴, 2026-10. 스토어 등록 전 최종 확인).
 - **구형 안드로이드 WebView가 유일한 호환성 위험이다.** WebView는 크롬과 함께 갱신되지만 구형 기기에서 뒤처질 수 있다. 빌드 타깃을 **ES2020**으로 낮추고, M12 점검표에 구형 WebView 확인을 넣는다.
