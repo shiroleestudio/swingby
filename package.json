@@ -1,7 +1,7 @@
 {
   "name": "swingby",
   "private": true,
-  "version": "0.6.2",
+  "version": "0.7.0",
   "engines": {
     "node": ">=22"
   },
@@ -23,6 +23,7 @@
     "check": "tsc --noEmit && node tools/check-core.mjs && node tools/check-colors.mjs",
     "fonts": "python3 tools/subset-fonts.py",
     "build:itch": "node tools/build-itch.mjs",
+    "build:toss": "node tools/build-toss.mjs",
     "survive": "tsx tools/inf-survive.ts"
   },
   "devDependencies": {
@@ -31,5 +32,8 @@
     "typescript": "^7.0.2",
     "vite": "^8.3.0",
     "vitest": "^5.0.1"
+  },
+  "dependencies": {
+    "@apps-in-toss/web-framework": "3.9.0"
   }
 }

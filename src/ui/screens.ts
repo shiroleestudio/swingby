@@ -13,13 +13,17 @@ import { seedFromCode } from '../tools-shared/infinity.js';
 import { messierLabel, messierLineOf } from '../i18n/messier.js';
 import type { HelpKey, IntroKey } from './intro.js';
 import type { Level } from '../core/types.js';
+import { IS_TOSS } from '../platform/toss.js';
 
 declare const __APP_VERSION__: string;
 
 export type Screen = 'title' | 'play';
 export type InfinityMode = 'daily' | 'random' | 'code';
 
-/** 개인정보처리방침은 스튜디오 허브 한 곳에만 둔다 — 판(itch·웹·앱)별 광고 차이도 거기서 나눠 적는다 */
+/**
+ * 개인정보처리방침은 스튜디오 허브 한 곳에만 둔다 — 판(itch·웹·앱)별 광고 차이도 거기서 나눠 적는다.
+ * 토스 빌드는 링크를 뺀다: 토스 밖 사이트로 나가는 링크는 검수에서 반려된다 (§15.7)
+ */
 const PRIVACY_URL = 'https://shiroleestudio.github.io/privacy/swingby/';
 
 const $ = (id: string): HTMLElement => {
@@ -297,8 +301,8 @@ export class Screens {
             ? `<div class="row2"><span class="label">${t('set.noAds')}</span>`
               + `<button class="btn" data-a="noads" type="button">${t('set.buy')}</button></div>`
             : ''}
-        <div class="row2"><span class="label">${t('set.privacy')}</span>
-          <a class="btn" href="${PRIVACY_URL}" target="_blank" rel="noopener">${t('set.view')}</a></div>
+        ${IS_TOSS ? '' : `<div class="row2"><span class="label">${t('set.privacy')}</span>
+          <a class="btn" href="${PRIVACY_URL}" target="_blank" rel="noopener">${t('set.view')}</a></div>`}
         <div class="row2"><span class="label">${t('set.credits')}</span>
           <span class="val dim">${t('set.oss')}</span></div>
         <p class="tapnote">${t('set.ossNote')}</p>

@@ -27,6 +27,7 @@ import { Save } from './save/save.js';
 import { Audio } from './audio/sfx.js';
 import { type AdProvider, FreeHintProvider, NoAdProvider, type RewardPlacement } from './platform/ads.js';
 import { buildTarget, detect, pickAdProvider, shareUrl } from './platform/capabilities.js';
+import { IS_TOSS, applyTossInsets, closeApp, submitScore } from './platform/toss.js';
 import {
   type AdState, afterClear, afterInfinityRun, afterInterstitial, afterRewarded, forNewSession,
   shouldShowInfinityInterstitial, shouldShowInterstitial,
@@ -676,8 +677,9 @@ history.replaceState({ depth: 0 }, '');
 addEventListener('popstate', () => {
   // 힌트 시트가 열려 있으면 그것만 닫는다 — 전에는 시트와 멈춘 시계를 남긴 채 단계 선택이 떴다
   if (hints.open) hints.close();
-  else if (!screens.goBack() && !demo) {
-    startDemo();
+  else if (!screens.goBack()) {
+    if (!demo) startDemo();
+    else if (IS_TOSS) { void closeApp(); return; }   // 토스: 타이틀에서 뒤로 가기 = 미니앱 닫기 (§15.7)
   }
   history.pushState({ depth: 1 }, '');
 });
@@ -811,6 +813,7 @@ function recordOutcome(): void {
     if (sec > rec.best) rec.best = sec;
     save.touch();
     infResult = { sec, best: rec.best, isBest, grazes: session.grazes, combo: session.maxCombo, cleared: session.cleared };
+    if (IS_TOSS) void submitScore(sec);         // 토스 게임센터 순위표 (§15.7). 판이 끝날 때만
     return;
   }
   const l = save.level(session.level.id);
@@ -1036,7 +1039,8 @@ if (cap.prefersReducedMotion && !save.data.settings.reduce_motion_set) {
 
 // 서비스 워커 — 재방문 시 오프라인 동작 (§15.1). 개발 서버에서는 걸지 않는다.
 // itch.io 빌드는 서비스 워커를 쓰지 않는다 — itch 가 iframe 안에서 돌리고 캐시도 itch 가 맡는다 (§15.6)
-if (!import.meta.env.DEV && buildTarget() !== 'itch' && 'serviceWorker' in navigator) {
+// 토스 빌드도 쓰지 않는다 — 토스가 번들을 받아 두고 연다 (§15.7)
+if (!import.meta.env.DEV && buildTarget() === 'web' && 'serviceWorker' in navigator) {
   addEventListener('load', () => {
     navigator.serviceWorker.register(
       new URL('sw.js', location.href).pathname,
@@ -1064,3 +1068,6 @@ resize();
 // 웹 포털·토스는 첫 몇 초에 판단한다 (§13.1)
 if (!save.data.seen_intros.includes('infinity') && !TEST_OPEN) startInfinity('random'); else startDemo();
 requestAnimationFrame(frame);
+
+// 토스 빌드: 상단 X 버튼과 노치를 피해 화면을 내린다 (§15.7). 여백이 바뀌면 캔버스 여백도 다시 잰다
+if (IS_TOSS) void applyTossInsets(document.documentElement).then(() => resize());

@@ -10,6 +10,7 @@ import { levelHint, levelName } from '../i18n/levels.js';
 import { displayId } from '../levels/chapters.js';
 import { heartIcon, img, perkIcon, rabbitIcon } from './art.js';
 import { PERK_KINDS } from '../tools-shared/perks.js';
+import { IS_TOSS, openLeaderboard } from '../platform/toss.js';
 
 /** §13.4 결과 화면 문구의 키. 성공에는 조언이 없다 */
 export const RESULT: Readonly<Record<Outcome, readonly [Key, Key | null]>> = {
@@ -280,7 +281,9 @@ export class Hud {
       <p class="tapnote">${t('inf.statsGraze', { g: info.grazes, c: info.combo })}${info.code ? ` · ${t('inf.code', { code: info.code })}` : ''}</p>
       <div class="row">${info.cleared ? '' : reviveBtn}
         <button class="btn primary" data-a="retry" type="button">${t('result.retry')}</button>
-        <button class="btn hint" data-a="share" type="button">${t('inf.share')}</button>
+        ${IS_TOSS
+          ? `<button class="btn hint" data-a="rank" type="button">${t('inf.rank')}</button>`
+          : `<button class="btn hint" data-a="share" type="button">${t('inf.share')}</button>`}
         <button class="btn" data-a="pick" type="button">${t('picker.toTitle')}</button>
       </div>
       ${isBest ? `<p class="tapnote">${t(daily ? 'inf.newBestDaily' : 'inf.newBest')}</p>` : ''}
@@ -295,6 +298,7 @@ export class Hud {
       b.addEventListener('click', () => {
         const a = b.dataset['a'];
         if (a === 'pick') this.onOpenPicker();
+        else if (a === 'rank') void openLeaderboard();   // 토스 빌드: 공유는 토스 메뉴에 있어 순위로 바꾼다 (§15.7)
         else if (a === 'revive') {
           b.disabled = true;
           void this.onRevive().then((k) => {

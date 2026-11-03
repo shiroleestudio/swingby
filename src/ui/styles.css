@@ -46,6 +46,9 @@
   --pixel:'Galmuri11 Swingby','Fusion Pixel SC Swingby';
   --text:var(--pixel),'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',system-ui,sans-serif;
   --display:'Galmuri14 Swingby',var(--text);
+  /* 화면 위아래 안전 여백. 토스 빌드는 SDK 값(+X 버튼)으로 덮어쓴다 (§15.7) */
+  --st:env(safe-area-inset-top,0px);
+  --sb:env(safe-area-inset-bottom,0px);
 }
 :root:lang(en){--text:var(--pixel),system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
 :root:lang(ja){--text:var(--pixel),'Hiragino Sans','Noto Sans JP','Yu Gothic','Meiryo',system-ui,sans-serif}
@@ -82,7 +85,7 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 /* ── HUD ──────────────────────────────────────────────────────────── */
 .hud{position:absolute;left:0;right:0;pointer-events:none;
      padding:0 12px;display:flex;align-items:flex-start;gap:8px}
-.hud.top{top:0;padding-top:calc(10px + env(safe-area-inset-top,0px))}
+.hud.top{top:0;padding-top:calc(10px + var(--st))}
 .hud .grow{display:none}
 /* HUD 버튼 글자는 끊지 않는다. 일본어 "リトライ" 가 "リトラ/イ" 로 갈라졌다 */
 .hud .btn{white-space:nowrap;flex-shrink:0;padding:0 10px}
@@ -106,14 +109,14 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 #angle,#hint{position:absolute;left:50%;transform:translateX(-50%);pointer-events:none;
   background:var(--white);border:3px solid var(--ink);box-shadow:3px 3px 0 var(--ink);
   text-align:center;max-width:calc(100% - 32px)}
-#angle{bottom:calc(16px + env(safe-area-inset-bottom,0px));padding:6px 12px;
+#angle{bottom:calc(16px + var(--sb));padding:6px 12px;
        font:400 17px/1 var(--display);white-space:nowrap}
-#hint{bottom:calc(16px + env(safe-area-inset-bottom,0px));padding:8px 12px;
+#hint{bottom:calc(16px + var(--sb));padding:8px 12px;
       background:var(--paper);font:400 13px/1.5 var(--text);width:max-content}
 #angle:empty,#hint:empty{display:none}
 /* 남은 분사 (§22.1): 왼쪽 위, 뒤로 버튼 바로 밑. 아래 가운데는 각도·힌트 판 자리라 겹친다.
    채운 칸 = 남은 횟수 */
-#turns{position:absolute;left:12px;top:calc(64px + env(safe-area-inset-top,0px));
+#turns{position:absolute;left:12px;top:calc(64px + var(--st));
   pointer-events:none;display:flex;align-items:center;gap:5px;padding:6px 10px;
   background:var(--white);border:3px solid var(--ink);box-shadow:3px 3px 0 var(--ink)}
 #turns[hidden]{display:none}
@@ -125,14 +128,14 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 #turns.shake{animation:shake .3s linear both}
 @keyframes shake{0%,100%{transform:none}20%{transform:translateX(-4px)}40%{transform:translateX(4px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
 /* 경험치 바 (§22.5): 오른쪽 위, 다시 버튼 밑. 패시브 줄은 분사 판 밑 */
-#xp{position:absolute;right:12px;top:calc(64px + env(safe-area-inset-top,0px));pointer-events:none;
+#xp{position:absolute;right:12px;top:calc(64px + var(--st));pointer-events:none;
   display:flex;align-items:center;gap:6px;padding:5px 8px;
   background:var(--white);border:3px solid var(--ink);box-shadow:3px 3px 0 var(--ink)}
 #xp[hidden]{display:none}
 #xp .bar{display:block;width:84px;height:10px;border:2px solid var(--ink);background:var(--gray-light)}
 #xp .bar b{display:block;height:100%;background:var(--green);width:0}
 #xp .lv{font:400 13px/1 var(--display)}
-#perks{position:absolute;left:12px;top:calc(112px + env(safe-area-inset-top,0px));pointer-events:none;
+#perks{position:absolute;left:12px;top:calc(112px + var(--st));pointer-events:none;
   display:flex;gap:4px;flex-wrap:wrap;max-width:150px}
 #perks[hidden]{display:none}
 #perks .pk{position:relative;width:24px;height:24px;background:var(--white);border:2px solid var(--ink)}
@@ -141,7 +144,7 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
   background:var(--yellow);border:2px solid var(--ink);padding:1px 2px}
 /* 보스전 (§22.6): 가운데 위, 단계 이름 밑. 체력 바는 빨강, 목숨은 하트 */
 /* 가운데 맞춤은 transform 이 아니라 margin 으로 — drop 애니메이션이 transform 을 덮어쓴다 */
-#boss{position:absolute;left:0;right:0;width:max-content;margin:0 auto;top:calc(112px + env(safe-area-inset-top,0px));
+#boss{position:absolute;left:0;right:0;width:max-content;margin:0 auto;top:calc(112px + var(--st));
   pointer-events:none;display:flex;align-items:center;gap:8px;padding:5px 10px;
   background:var(--white);border:3px solid var(--ink);box-shadow:3px 3px 0 var(--ink);
   animation:drop .4s ease-out both}
@@ -156,7 +159,7 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 @keyframes blink{50%{background:var(--red)}}
 /* 알림 한 줄 (§22.7): 위쪽 가운데, 보스 판 자리보다 조금 아래 */
 #toast{position:absolute;left:0;right:0;width:max-content;max-width:calc(100% - 32px);margin:0 auto;
-  top:calc(160px + env(safe-area-inset-top,0px));pointer-events:none;padding:8px 14px;
+  top:calc(160px + var(--st));pointer-events:none;padding:8px 14px;
   background:var(--yellow);border:3px solid var(--ink);box-shadow:3px 3px 0 var(--ink);
   font:700 13px/1.3 var(--text);text-align:center}
 #toast[hidden]{display:none}
@@ -208,7 +211,7 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 .sheet .head img{width:52px;height:42px;flex:none}
 .tapnote{font-size:12px;color:var(--deep);text-align:center}
 /* 결과는 아래쪽에 — 비행 궤적이 위에 보인다 */
-#result{justify-content:flex-end;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+#result{justify-content:flex-end;padding-bottom:calc(16px + var(--sb))}
 /* 소개 카드: 요소 그림을 하늘색 창에 */
 #intro .panel{align-items:stretch;text-align:center}
 #intro .art{background:var(--sky);border:3px solid var(--ink);height:120px;
@@ -223,8 +226,8 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 
 /* ── 타이틀 · 단계 선택 · 설정 (§13.1, §13.2, §13.6) ────────────────── */
 .screen{position:absolute;inset:0;display:flex;flex-direction:column;
-        padding:calc(16px + env(safe-area-inset-top,0px)) 16px
-                calc(20px + env(safe-area-inset-bottom,0px));
+        padding:calc(16px + var(--st)) 16px
+                calc(20px + var(--sb));
         gap:16px;overflow-y:auto;
         /* 캔버스와 같은 밤하늘. --stars 는 main.ts 가 필드의 별 타일을 구워 넣는다 (§12.5) */
         background:var(--sky) var(--stars,none) repeat;background-size:192px 192px}
@@ -358,7 +361,7 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 #mockad p{margin:4px 0}
 
 /* 스침 콤보 (§22.8): 왼쪽, 패시브 줄 아래. 바는 콤보가 끊기기까지 남은 시간 */
-#graze{position:absolute;left:12px;top:calc(142px + env(safe-area-inset-top,0px));pointer-events:none;
+#graze{position:absolute;left:12px;top:calc(142px + var(--st));pointer-events:none;
   display:flex;align-items:center;gap:6px;padding:3px 8px;
   background:var(--yellow);border:3px solid var(--ink);box-shadow:3px 3px 0 var(--ink);animation:pop .25s ease-out both}
 #graze[hidden]{display:none}

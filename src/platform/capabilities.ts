@@ -39,8 +39,8 @@ export function detect(): Capabilities {
 export async function pickAdProvider(cap: Capabilities, hooks: H5Hooks): Promise<AdProvider> {
   const mode = mockModeFromQuery(location.search);
   if (mode === 'none') return new NoAdProvider();
-  // itch.io 빌드: 광고 없이 힌트를 준다 (§15.6)
-  if (buildTarget() === 'itch') return new FreeHintProvider();
+  // itch.io 빌드: 광고 없이 힌트를 준다 (§15.6). 토스 빌드도 광고를 붙이기 전까지는 같다 (§15.7)
+  if (buildTarget() !== 'web') return new FreeHintProvider();
 
   if (import.meta.env.DEV) {
     const p = new MockAdProvider(mode);
@@ -64,17 +64,21 @@ export async function pickAdProvider(cap: Capabilities, hooks: H5Hooks): Promise
  * 존재하지 않고, 정적 import 로 두면 빌드가 깨진다. 값이 없으면 광고 없음으로
  * 동작한다 — 그게 정상 상태다(§14.1).
  */
-/** 빌드 대상. `VITE_TARGET=itch` 로 itch.io 용을 만든다(`npm run build:itch`). 없으면 우리 웹 */
-export function buildTarget(): 'web' | 'itch' {
-  return (import.meta.env as Record<string, string | undefined>)['VITE_TARGET'] === 'itch' ? 'itch' : 'web';
+/**
+ * 빌드 대상. `VITE_TARGET=itch` 로 itch.io 용(`npm run build:itch`), `VITE_TARGET=toss` 로
+ * 앱인토스용(`npm run build:toss`)을 만든다. 없으면 우리 웹
+ */
+export function buildTarget(): 'web' | 'itch' | 'toss' {
+  const v = (import.meta.env as Record<string, string | undefined>)['VITE_TARGET'];
+  return v === 'itch' || v === 'toss' ? v : 'web';
 }
 
 /**
  * 공유 문구에 붙일 게임 주소 (§22.3). 우리 웹은 지금 주소(질의 없이). itch.io 는 iframe
- * 안이라 location 이 itch 의 CDN 주소다 — 사람이 열 수 없으니 붙이지 않는다.
+ * 안이라 location 이 itch 의 CDN 주소다 — 사람이 열 수 없으니 붙이지 않는다. 토스도 같다.
  */
 export function shareUrl(): string {
-  return buildTarget() === 'itch' ? '' : location.origin + location.pathname;
+  return buildTarget() === 'web' ? location.origin + location.pathname : '';
 }
 
 function h5Client(): string {

@@ -1345,6 +1345,22 @@ Claude Code가 초안을 만들고 사용자가 확인한다.
 - 앱 서명용 업로드 키는 저장소 밖에 보관하고 별도 백업한다. 키스토어 경로·비밀번호가 저장소에 들어가지 않게 한다(§19).
 ---
 
+### 15.7 앱인토스 (2026-11-03 추가)
+
+토스 앱 안의 WebView 게임 미니앱. 웹 빌드를 그대로 싣고 SDK(`@apps-in-toss/web-framework`, 버전 고정)만 더한다.
+`npm run build:toss` → `build/toss/space-surfer-moon-rabbit.ait` → 콘솔 [앱 번들]에 올리고 [토스앱 테스트].
+설정은 저장소 맨 위 `apps-in-toss.config.ts`(appName `space-surfer-moon-rabbit`, 콘솔과 같아야 하고 바꿀 수 없다).
+
+토스 빌드(`VITE_TARGET=toss`, `src/platform/toss.ts`)만 다른 점:
+- 판이 끝나면 버틴 시간(초, 소수 한 자리)을 게임센터 순위표에 낸다. 결과 화면 [공유] 자리에 [순위] — 공유는 토스 상단 메뉴에 있다
+- 화면 위 여백 `--st` = SDK safe area top + 44px(토스 X 버튼), 아래 `--sb` = safe area bottom. 웹은 CSS `env()` 그대로
+- 타이틀에서 안드로이드 뒤로 가기 = 미니앱 닫기(`closeView`). 웹처럼 타이틀에 붙잡아 두면 검수에서 걸린다
+- 서비스 워커 없음, 개인정보처리방침 링크 없음(토스 밖으로 나가는 링크 금지), 힌트·이어하기·다시 뽑기는 광고 없이(광고는 정산 명의를 정한 뒤)
+- 웹·itch 빌드에는 SDK 코드가 들어가지 않는다(`IS_TOSS` 가 빌드 때 상수로 접힌다)
+
+출시 전에 남은 것: 게임 등급분류(게임물관리위원회 또는 스토어 링크 — IARC 만으로는 안 된다는 문서도 있다), 토스앱 실기기 테스트
+(저장 유지·X 버튼 겹침·소리 끄고 켜기), 종료 확인 모달 요건 확인.
+
 ## 16. 검증 도구와 테스트
 
 CLI 도구는 `tsx`로 실행하는 평범한 TypeScript 파일이다. 게임과 **같은** `src/core/`·`src/tools-shared/`를 import하므로 결과가 어긋날 수 없다. 레벨을 디스크에서 읽는 것만 `tools/levels-fs.ts`가 맡고, 스키마 검사(`parseLevel`)는 게임과 공유한다.

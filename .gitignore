@@ -1,6 +1,7 @@
 node_modules/
 dist/
 build/
+*.ait
 
 # 비밀 정보 (§14.2, §15.5)
 src/platform/ads.config.ts

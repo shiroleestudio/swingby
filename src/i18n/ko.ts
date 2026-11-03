@@ -110,6 +110,7 @@ export const ko = {
   'inf.statsDaily': '{sec}초 버텼어요 · 오늘 최고 {best}초',
   'inf.newBestDaily': '오늘의 최고 기록이에요!',
   'inf.share': '공유',
+  'inf.rank': '순위',
   'inf.copied': '복사했어요. 붙여 넣어 자랑하세요',
   'inf.shareFailed': '공유할 수 없는 환경이에요',
   'inf.shareText': '스페이스서퍼 달토끼 오늘의 우주 {date} — {sec}초 버텼어요',

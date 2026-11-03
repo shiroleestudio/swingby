@@ -100,6 +100,7 @@ export const zh: Dict = {
   'inf.statsDaily': '坚持了 {sec} 秒 · 今日最佳 {best} 秒',
   'inf.newBestDaily': '今日最佳纪录！',
   'inf.share': '分享',
+  'inf.rank': '排行榜',
   'inf.copied': '已复制，粘贴去炫耀吧',
   'inf.shareFailed': '此环境无法分享',
   'inf.shareText': '太空冲浪 月兔 今日宇宙 {date} — 我坚持了 {sec} 秒',
