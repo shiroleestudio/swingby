@@ -79,6 +79,7 @@ function png(n: number, rgba: Uint8Array): Buffer {
 
 for (const [n, path] of [
   [32, 'public/favicon.png'], [192, 'public/icon-192.png'], [512, 'public/icon-512.png'], [1024, 'store/icon-1024.png'],
+  [600, 'store/toss/logo-600.png'],   // 앱인토스 콘솔 앱 로고 (§15.7)
 ] as const) {
   const buf = png(n, icon(n));
   writeFileSync(join(ROOT, path), buf);
