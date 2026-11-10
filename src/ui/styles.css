@@ -230,6 +230,7 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
               font:400 13px/1.4 var(--text);cursor:pointer}
 #intro .check input{width:22px;height:22px;accent-color:var(--orange);margin:0}
 .tutbtn{align-self:flex-start;margin-bottom:8px}
+#intro .quit .row .btn{align-self:auto;min-height:52px}
 /* 소개 카드: 요소 그림을 하늘색 창에 */
 #intro .panel{align-items:stretch;text-align:center}
 #intro .art{background:var(--sky);border:3px solid var(--ink);height:120px;
