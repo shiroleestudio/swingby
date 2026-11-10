@@ -13,7 +13,7 @@ Claude Code 가 초안을 만들고 사용자가 확인한다.
 | `screenshots.md` | 스크린샷 구성안 5장 | ✅ |
 | `data-safety.md` | 데이터 보안·개인정보 라벨 메모 | ✅ |
 | `tester-guide.md` | 비공개 테스터 안내문 | ✅ |
-| 개인정보처리방침 | 스튜디오 허브 `https://shiroleestudio.github.io/privacy/swingby/` 에 판별(itch·웹 포털·앱)로 둔다. 게임 설정의 링크가 이곳을 연다. 2026-10-23 부터 저장소 사본 없음 | ✅ 문의처 shiroleestudio@gmail.com |
+| 개인정보처리방침 | 스튜디오 허브 `https://shiroleestudio.com/privacy/swingby/` 에 판별(itch·웹 포털·앱)로 둔다. 게임 설정의 링크가 이곳을 연다. 2026-10-23 부터 저장소 사본 없음 | ✅ 문의처 shiroleestudio@gmail.com |
 
 ## 사용자가 해야 하는 것
 
@@ -21,7 +21,7 @@ Claude Code 가 초안을 만들고 사용자가 확인한다.
 
 1. ~~개인정보처리방침의 문의처 이메일~~ — 채움(shiroleestudio@gmail.com, 사업용 구글 계정. 스토어·광고 계정도 이 계정으로).
 2. **H5 Games Ads 도메인 승인 신청** — AdSense/Ad Manager 계정으로
-   `dooholee96-code.github.io` 를 등록한다. 심사에 시간이 걸리므로 먼저 낸다.
+   `shiroleestudio.com` 을 등록한다(게임은 spacesurfer.shiroleestudio.com). 심사에 시간이 걸리므로 먼저 낸다.
 3. 승인 뒤 퍼블리셔 ID 를 **GitHub Actions 시크릿 `VITE_H5_CLIENT`** 로 넣는다.
    저장소 파일에 적지 않는다.
 4. 구글 플레이 개발자 계정, 앱 ID 확정, 업로드 키 생성·보관.

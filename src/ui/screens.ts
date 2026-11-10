@@ -25,7 +25,7 @@ export type InfinityMode = 'daily' | 'random' | 'code';
  * 개인정보처리방침은 스튜디오 허브 한 곳에만 둔다 — 판(itch·웹·앱)별 광고 차이도 거기서 나눠 적는다.
  * 토스 빌드는 링크를 뺀다: 토스 밖 사이트로 나가는 링크는 검수에서 반려된다 (§15.7)
  */
-const PRIVACY_URL = 'https://shiroleestudio.github.io/privacy/swingby/';
+const PRIVACY_URL = 'https://shiroleestudio.com/privacy/swingby/';
 
 const $ = (id: string): HTMLElement => {
   const el = document.getElementById(id);

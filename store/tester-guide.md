@@ -7,7 +7,7 @@
 ## 먼저 웹에서 해 보셔도 됩니다
 
 설치 없이 바로 됩니다:
-<https://dooholee96-code.github.io/swingbypuzzle/>
+<https://spacesurfer.shiroleestudio.com/>
 
 ## 앱 설치
 
