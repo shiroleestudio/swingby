@@ -28,7 +28,8 @@ import { Audio } from './audio/sfx.js';
 import { type AdProvider, FreeHintProvider, NoAdProvider, type RewardPlacement } from './platform/ads.js';
 import { buildTarget, detect, pickAdProvider, shareUrl } from './platform/capabilities.js';
 import { onBackButton } from './platform/app.js';
-import { IS_TOSS, applyTossInsets, closeApp, submitScore, tossScore } from './platform/toss.js';
+import { IS_TOSS, applyTossInsets, closeApp, submitScore } from './platform/toss.js';
+import { runScore } from './game/score.js';
 import {
   type AdState, afterClear, afterInfinityRun, afterInterstitial, afterRewarded, forNewSession,
   shouldShowInfinityInterstitial, shouldShowInterstitial,
@@ -421,10 +422,10 @@ function startPlay(id: string): void {
  */
 let infMode: InfinityMode = 'random';
 /** 오늘의 우주 기록. 날짜가 바뀌었으면 비우고 오늘로 */
-function dailyRecord(): { day: string; best: number; runs: number } {
+function dailyRecord(): { day: string; best: number; score: number; runs: number } {
   const d = save.data.infinity.daily;
   const today = dayKey(new Date());
-  if (d.day !== today) { d.day = today; d.best = 0; d.runs = 0; }
+  if (d.day !== today) { d.day = today; d.best = 0; d.score = 0; d.runs = 0; }
   return d;
 }
 let infSeed = 0;
@@ -800,7 +801,7 @@ async function goNext(): Promise<void> {
  * 기록했는데, 그 사이에 "다시"·"단계"·뒤로 가기를 누르면 기록이 사라졌다 —
  * 깬 단계가 클리어로 남지 않고, 실패 횟수가 안 올라 힌트(§14.3)가 열리지 않았다.
  */
-let infResult: { sec: number; best: number; isBest: boolean; grazes: number; combo: number; cleared: boolean } | null = null;
+let infResult: { sec: number; score: number; best: number; isBest: boolean; grazes: number; combo: number; cleared: boolean } | null = null;
 /** 이번 인피니티 판을 판 수에 넣었는가. 이어하기(§14.7)로 두 번 끝나도 한 판이다 */
 let infCounted = false;
 function recordOutcome(): void {
@@ -818,11 +819,16 @@ function recordOutcome(): void {
     if (sec > inf.best) inf.best = sec;         // 전체 최고는 어느 우주든 센다
     if (session.cleared) inf.clears++;          // 클리어(§22.8)는 판을 끝내므로 한 판에 한 번이다
     // 오늘의 우주는 오늘 기록으로 보여 준다 — "오늘 최고" 가 공유의 단위다
-    const isBest = sec > rec.best || (infMode === 'daily' && rec.best === 0 && sec > 0 && rec.runs === 1);
     if (sec > rec.best) rec.best = sec;
+    // 결과 화면은 점수로 말한다 (§22.3). 최고 기록 표시도 점수 기준
+    // 최고인지는 고치기 전에 본다 — 아무 우주(rec 가 곧 inf)에서는 먼저 고치면 늘 거짓이 된다
+    const score = runScore(sec, session.grazes);
+    const isBest = score > rec.score;
+    if (isBest) rec.score = score;
+    if (score > inf.score) inf.score = score;   // 전체 최고는 어느 우주든 센다
     save.touch();
-    infResult = { sec, best: rec.best, isBest, grazes: session.grazes, combo: session.maxCombo, cleared: session.cleared };
-    if (IS_TOSS) void submitScore(tossScore(sec, session.grazes));         // 토스 게임센터 순위표 (§15.7). 판이 끝날 때만
+    infResult = { sec, score, best: rec.score, isBest, grazes: session.grazes, combo: session.maxCombo, cleared: session.cleared };
+    if (IS_TOSS) void submitScore(score);         // 토스 게임센터 순위표 (§15.7). 판이 끝날 때만
     return;
   }
   const l = save.level(session.level.id);
@@ -950,7 +956,7 @@ function frame(now: number): void {
   if (session.state === 'ending' && session.endProgress() >= 1 && hud.result.hidden) {
     if (session.world) {
       if (infResult) {
-        hud.showInfinityResult(infResult.sec, infResult.best, infResult.isBest, infMode === 'daily',
+        hud.showInfinityResult(infResult.sec, infResult.score, infResult.best, infResult.isBest, infMode === 'daily',
           session.canRevive ? rewardMode() : null,
           { grazes: infResult.grazes, combo: infResult.combo, code: infMode === 'daily' ? null : codeFromSeed(infSeed), cleared: infResult.cleared });
       }
