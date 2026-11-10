@@ -669,7 +669,7 @@ addEventListener('keydown', (e) => {
     if (st === 'aiming') { session.cancelAim(); aim.finish(); dragMode = null; dragPointer = -1; }
     else used = false;
   } else if (e.key === 'r' || e.key === 'R') {
-    hud.onRetry();
+    guardQuit(() => hud.onRetry());
   } else used = false;
   if (used) e.preventDefault();
 });
@@ -767,7 +767,16 @@ hud.onShare = async () => {
     return 'inf.copied';
   } catch { return 'inf.shareFailed'; }
 };
-hud.stage.addEventListener('click', () => hud.onOpenPicker());
+/**
+ * 날고 있는 인피니티 판을 버리는 단추([타이틀]·[다시]·R)는 먼저 묻는다 (§13.9, 사용자 결정 2026-11-10).
+ * 잘못 눌러 몇 분짜리 판을 잃지 않게. 조준 중이거나 판이 끝난 뒤에는 묻지 않는다.
+ */
+function guardQuit(act: () => void): void {
+  if (demo || !session.world || session.state !== 'flying' || screens.overlayOpen || levelup.open) { act(); return; }
+  screens.confirmQuit(act, () => { session.pauseReset(); pacer.reset(); });
+}
+hud.onRetryTop = () => guardQuit(() => hud.onRetry());
+hud.stage.addEventListener('click', () => guardQuit(() => hud.onOpenPicker()));
 document.getElementById('hintbtn')!.addEventListener('click', () => hints.show());
 
 /**

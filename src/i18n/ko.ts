@@ -174,6 +174,10 @@ export const ko = {
   'tut.dontShow': '다음부터 안 보기',
   'tut.replay': '튜토리얼 다시 보기',
   'tut.page': '{i} / {n}',
+  'quit.title': '이번 판을 그만둘까요?',
+  'quit.body': '지금 그만두면 이번 판의 점수는 남지 않아요.',
+  'quit.stay': '계속하기',
+  'quit.leave': '그만두기',
   // §13.9 도움말
   'title.help': '도움말',
   'help.title': '도움말',

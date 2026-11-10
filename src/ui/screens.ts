@@ -239,7 +239,13 @@ export class Screens {
     const mark = seenKey(L.id, key);
     if (seen.includes(mark)) return false;
     // 인피니티는 카드 한 장이 아니라 여러 장짜리 튜토리얼 (§13.9). "다음부터 안 보기"를 켠 채 닫아야 본 것으로 친다
-    if (key === 'infinity') { this.showTutorial((dontShow) => { if (dontShow) onSeen(mark); }); return true; }
+    // 체크를 끄고 닫았어도 [다시]로 새 판을 열 때마다 또 뜨지는 않는다 — 한 번 들어와서 한 번만
+    if (key === 'infinity') {
+      if (this.tutorialShown) return false;
+      this.tutorialShown = true;
+      this.showTutorial((dontShow) => { if (dontShow) onSeen(mark); });
+      return true;
+    }
     this.showIntroCard(L.id, key);
     onSeen(mark);
     return true;
@@ -262,6 +268,9 @@ export class Screens {
    * 도움말 카드 여섯 장을 차례로 넘겨 본다. 처음 시작할 때(onDone 있음)는 "다음부터 안 보기"
    * 체크 칸이 있고, 닫을 때 그 값을 돌려준다. 도움말에서 다시 볼 때(onDone 없음)는 도움말로 돌아간다.
    */
+  private tutorialShown = false;
+  /** 열려 있는 판을 뒤로 가기로 닫을 때 할 일 — 튜토리얼은 체크 칸 값을 그대로 남기고, 확인 판은 "계속하기" */
+  private introClose: (() => void) | null = null;
   showTutorial(onDone?: (dontShow: boolean) => void, page = 0, dontShow = true): void {
     const key = TUTORIAL_KEYS[page]!;
     const { title, body } = helpFor(key);
@@ -279,14 +288,37 @@ export class Screens {
       </div>
       ${onDone ? `<label class="check"><input type="checkbox"${dontShow ? ' checked' : ''}><span>${t('tut.dontShow')}</span></label>` : ''}</div>`;
     const checked = (): boolean => this.introEl.querySelector<HTMLInputElement>('.check input')?.checked ?? dontShow;
+    this.introClose = onDone ? () => onDone(checked()) : null;
     this.bind(this.introEl, {
       prev: () => this.showTutorial(onDone, page - 1, checked()),
       next: () => {
         if (!last) { this.showTutorial(onDone, page + 1, checked()); return; }
         const v = checked();
         this.introEl.hidden = true;
+        this.introClose = null;
         if (onDone) onDone(v); else this.showHelp();
       },
+    });
+    this.introEl.hidden = false;
+  }
+
+  /**
+   * 날고 있는 판을 버리기 전에 묻는다 (§13.9). 떠 있는 동안 게임은 멈춘다(overlayOpen).
+   * [계속하기]·뒤로 가기는 그대로 이어 날고, [그만두기]만 onLeave 를 부른다.
+   */
+  confirmQuit(onLeave: () => void, onStay: () => void): void {
+    this.introBack = null;
+    this.introEl.className = 'sheet';
+    this.introEl.innerHTML = `<div class="panel quit">
+      <h2>${t('quit.title')}</h2><p>${t('quit.body')}</p>
+      <div class="row">
+        <button class="btn" data-a="leave" type="button">${t('quit.leave')}</button>
+        <button class="btn primary" data-a="stay" type="button">${t('quit.stay')}</button>
+      </div></div>`;
+    this.introClose = onStay;
+    this.bind(this.introEl, {
+      stay: () => { this.introEl.hidden = true; this.introClose = null; onStay(); },
+      leave: () => { this.introEl.hidden = true; this.introClose = null; onLeave(); },
     });
     this.introEl.hidden = false;
   }
@@ -421,6 +453,9 @@ export class Screens {
   goBack(): boolean {
     if (!this.introEl.hidden) {
       this.introEl.hidden = true;
+      const close = this.introClose;
+      this.introClose = null;
+      if (close) { close(); return true; }
       if (this.introBack === 'title') this.showTitle();
       else if (this.introBack === 'catalog') this.showCatalog();
       else if (this.introBack === 'help') this.showHelp();
