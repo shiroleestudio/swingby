@@ -681,7 +681,7 @@ function backStep(): boolean {
   if (hints.open) hints.close();
   else if (!screens.goBack()) {
     if (demo) return false;
-    startDemo();
+    guardQuit(() => hud.onOpenPicker());   // 날고 있으면 먼저 묻는다 (§13.9)
   }
   return true;
 }
@@ -775,7 +775,7 @@ function guardQuit(act: () => void): void {
   screens.confirmQuit(act, () => { session.pauseReset(); pacer.reset(); });
 }
 hud.onRetryTop = () => guardQuit(() => hud.onRetry());
-hud.stage.addEventListener('click', () => guardQuit(() => hud.onOpenPicker()));
+hud.onBackTop = () => guardQuit(() => hud.onOpenPicker());
 document.getElementById('hintbtn')!.addEventListener('click', () => hints.show());
 
 /**
