@@ -42,7 +42,7 @@ if (!existsSync(join(ROOT, 'android'))) run('npx', ['cap', 'add', 'android']);
 run('npx', ['cap', 'sync', 'android']);
 run('npx', ['tsx', 'tools/android-res.ts']);
 
-// ③ 버전 — 0.8.1 → versionCode 801. 플레이는 올릴 때마다 versionCode 가 커져야 한다
+// ③ 버전 — 0.8.2 → versionCode 802. 플레이는 올릴 때마다 versionCode 가 커져야 한다
 const { version } = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'));
 const [ma, mi, pa] = version.split('.').map(Number);
 const code = ma * 10000 + mi * 100 + pa;

@@ -3,7 +3,7 @@
 달토끼가 당근 로켓을 타고 행성의 중력을 타 넘는 물리 퍼즐. TypeScript + Vite + Canvas 2D, 서버 없음.
 내부 이름은 `swingby`(저장 키·앱 ID·zip 이름)이고 바꾸지 않는다.
 
-- 웹판(개발자 버전, 모든 단계 열림): https://spacesurfer.shiroleestudio.com/?open
+- 웹판: https://spacesurfer.shiroleestudio.com/
 - itch.io 무료 웹판: 허브 https://shiroleestudio.com 의 게임 소개에서
 - 개인정보처리방침: https://shiroleestudio.com/privacy/swingby/ (저장소 안에 사본 없음)
 
