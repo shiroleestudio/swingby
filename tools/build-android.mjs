@@ -1,6 +1,7 @@
-// 구글 플레이 업로드용 안드로이드 빌드. docs/PLAN.md §15.2
+// 구글 플레이·원스토어 업로드용 안드로이드 빌드. docs/PLAN.md §15.2
 //
-//   npm run build:android   →   build/app/space-surfer-moon-rabbit.aab
+//   npm run build:android   →   build/app/space-surfer-moon-rabbit.aab (구글 플레이)
+//                               build/app/space-surfer-moon-rabbit.apk (원스토어)
 //
 // 웹 게임을 Capacitor WebView 로 감싼다. 게임 코드는 같고 다른 점은(VITE_TARGET=app):
 //   · 힌트·이어하기·다시 뽑기는 광고 없이 준다(AdMob 을 붙이기 전까지, §14)
@@ -22,7 +23,7 @@ import { fileURLToPath } from 'node:url';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'build', 'app');
 const SITE = join(OUT, 'site');            // capacitor.config.ts 의 webDir 과 같아야 한다
-const NAME = 'space-surfer-moon-rabbit.aab';
+const NAME = 'space-surfer-moon-rabbit';
 
 const run = (cmd, args, opts = {}) =>
   execFileSync(cmd, args, { cwd: ROOT, stdio: 'inherit', ...opts, env: { ...process.env, ...opts.env } });
@@ -41,7 +42,7 @@ if (!existsSync(join(ROOT, 'android'))) run('npx', ['cap', 'add', 'android']);
 run('npx', ['cap', 'sync', 'android']);
 run('npx', ['tsx', 'tools/android-res.ts']);
 
-// ③ 버전 — 0.7.1 → versionCode 701. 플레이는 올릴 때마다 versionCode 가 커져야 한다
+// ③ 버전 — 0.7.3 → versionCode 703. 플레이는 올릴 때마다 versionCode 가 커져야 한다
 const { version } = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'));
 const [ma, mi, pa] = version.split('.').map(Number);
 const code = ma * 10000 + mi * 100 + pa;
@@ -76,12 +77,19 @@ const m = readFileSync(manifest, 'utf8');
 if (!m.includes('screenOrientation')) writeFileSync(manifest, m.replace('<activity', '<activity\n            android:screenOrientation="portrait"'));
 console.log(`\n  안드로이드 버전 ${version} (versionCode ${code})${signed ? ', 업로드 키로 서명' : ', 서명 없음'}`);
 
-// ⑥ .aab
+// ⑥ .aab(플레이)·.apk(원스토어) — 같은 키로 서명해서 두 스토어의 앱이 같은 서명을 갖는다
 if (!process.env.ANDROID_HOME && !process.env.ANDROID_SDK_ROOT) {
-  console.log('  ANDROID_HOME 이 없어 .aab 는 만들지 않았다. GitHub Actions 의 "안드로이드 빌드" 워크플로를 돌린다');
+  console.log('  ANDROID_HOME 이 없어 .aab·.apk 는 만들지 않았다. GitHub Actions 의 "안드로이드 빌드" 워크플로를 돌린다');
   process.exit(0);
 }
-run('./gradlew', ['bundleRelease', '--no-daemon'], { cwd: join(ROOT, 'android') });
-const aab = join(ROOT, 'android', 'app', 'build', 'outputs', 'bundle', 'release', 'app-release.aab');
-copyFileSync(aab, join(OUT, NAME));
-console.log(`\n  플레이 번들: ${join(OUT, NAME)} (${(statSync(join(OUT, NAME)).size / 1024).toFixed(0)}KB)`);
+run('./gradlew', ['bundleRelease', 'assembleRelease', '--no-daemon'], { cwd: join(ROOT, 'android') });
+const outputs = join(ROOT, 'android', 'app', 'build', 'outputs');
+const apkDir = join(outputs, 'apk', 'release');
+const apk = ['app-release.apk', 'app-release-unsigned.apk'].map((f) => join(apkDir, f)).find((f) => existsSync(f));
+if (!apk) throw new Error('APK 가 없다');
+copyFileSync(join(outputs, 'bundle', 'release', 'app-release.aab'), join(OUT, `${NAME}.aab`));
+copyFileSync(apk, join(OUT, `${NAME}.apk`));
+for (const ext of ['aab', 'apk']) {
+  const f = join(OUT, `${NAME}.${ext}`);
+  console.log(`  ${f} (${(statSync(f).size / 1024).toFixed(0)}KB)`);
+}

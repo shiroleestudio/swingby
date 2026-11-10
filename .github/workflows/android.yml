@@ -1,14 +1,14 @@
-# 구글 플레이 업로드용 .aab 를 만든다. docs/PLAN.md §15.2
+# 구글 플레이용 .aab 와 원스토어용 .apk 를 만든다. docs/PLAN.md §15.2
 #
 # 손으로 돌린다: Actions → "안드로이드 빌드" → Run workflow.
-# 끝나면 실행 화면 아래 Artifacts 에 space-surfer-moon-rabbit-aab 가 생긴다.
+# 끝나면 실행 화면 아래 Artifacts 에 space-surfer-moon-rabbit-android(zip 안에 .aab·.apk)가 생긴다.
 #
 # 서명: 저장소 Settings → Secrets and variables → Actions 에 넷을 넣으면 업로드 키로 서명한다.
 #   ANDROID_KEYSTORE_B64       업로드 키(.jks)를 base64 로 바꾼 글
 #   ANDROID_KEYSTORE_PASSWORD  키 저장소 비밀번호
 #   ANDROID_KEY_ALIAS          키 별칭
 #   ANDROID_KEY_PASSWORD       키 비밀번호
-# 없으면 서명 없는 .aab 가 나온다(플레이에는 못 올림). 키 파일은 저장소에 넣지 않는다 (§0.8).
+# 없으면 서명 없는 파일이 나온다(스토어에는 못 올림). 원스토어는 이 키가 곧 앱 서명이라 잃으면 업데이트를 못 한다 — 두 곳 이상에 보관. 키 파일은 저장소에 넣지 않는다 (§0.8).
 
 name: 안드로이드 빌드
 
@@ -60,6 +60,9 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: space-surfer-moon-rabbit-aab
-          path: build/app/space-surfer-moon-rabbit.aab
+          name: space-surfer-moon-rabbit-android
+          path: |
+            build/app/space-surfer-moon-rabbit.aab
+            build/app/space-surfer-moon-rabbit.apk
+          if-no-files-found: error
           retention-days: 30

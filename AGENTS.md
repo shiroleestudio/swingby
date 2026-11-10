@@ -64,7 +64,7 @@ npm run check     tsc + core/ 의 DOM 사용 검사
 npm run build     타입 검사 후 dist/ 생성
 npm run build:itch  itch.io 업로드 zip (광고 없는 힌트, 서비스 워커 없음) — store/itch/README.md
 npm run build:toss  앱인토스 번들 .ait (게임센터 순위표, X 버튼 여백) — PLAN §15.7
-npm run build:android  구글 플레이 .aab (Capacitor, 세로 고정). SDK 가 없으면 android/ 준비까지 — .aab 는 Actions "안드로이드 빌드" (§15.2)
+npm run build:android  구글 플레이 .aab + 원스토어 .apk (Capacitor, 세로 고정). SDK 가 없으면 android/ 준비까지 — .aab 는 Actions "안드로이드 빌드" (§15.2)
 npm run solve     전 각도 스캔 (§16.1)
 npm run bench     성능 측정 (§8.9) — 1-1 0.061초 / 5-1 0.517초
 npm run preview   빌드 결과 서빙. **배포 전 확인은 dev 가 아니라 이것으로**
