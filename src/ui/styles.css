@@ -212,6 +212,24 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 .tapnote{font-size:12px;color:var(--deep);text-align:center}
 /* 결과는 아래쪽에 — 비행 궤적이 위에 보인다 */
 #result{justify-content:flex-end;padding-bottom:calc(16px + var(--sb))}
+/* 인피니티 결과 (§22.3): 가운데 큰 판. 점수를 가장 크게, 아래 세 칸 */
+#result.inf{justify-content:center}
+#result.inf .panel{gap:12px}
+#result .score{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 0 4px}
+#result .score b{font:400 44px/1.1 var(--display)}
+#result .score span{font:400 13px/1.4 var(--text);color:var(--deep)}
+#result .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+#result .stat{border:3px solid var(--ink);background:var(--white);padding:8px 4px;
+              display:flex;flex-direction:column;align-items:center;gap:2px}
+#result .stat b{font:700 17px/1.2 var(--text)}
+#result .stat span{font:400 11px/1.3 var(--text);color:var(--deep)}
+/* 튜토리얼 (§13.9): 쪽 번호, 이전·다음, 다음부터 안 보기 */
+#intro .tut .page{font-size:12px}
+#intro .tut .row .btn{align-self:auto}
+#intro .check{display:flex;align-items:center;justify-content:center;gap:8px;min-height:44px;
+              font:400 13px/1.4 var(--text);cursor:pointer}
+#intro .check input{width:22px;height:22px;accent-color:var(--orange);margin:0}
+.tutbtn{align-self:flex-start;margin-bottom:8px}
 /* 소개 카드: 요소 그림을 하늘색 창에 */
 #intro .panel{align-items:stretch;text-align:center}
 #intro .art{background:var(--sky);border:3px solid var(--ink);height:120px;

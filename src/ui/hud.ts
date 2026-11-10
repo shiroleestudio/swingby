@@ -10,7 +10,7 @@ import { levelHint, levelName } from '../i18n/levels.js';
 import { displayId } from '../levels/chapters.js';
 import { heartIcon, img, perkIcon, rabbitIcon } from './art.js';
 import { PERK_KINDS } from '../tools-shared/perks.js';
-import { IS_TOSS, openLeaderboard, tossScore } from '../platform/toss.js';
+import { IS_TOSS, openLeaderboard } from '../platform/toss.js';
 
 /** §13.4 결과 화면 문구의 키. 성공에는 조언이 없다 */
 export const RESULT: Readonly<Record<Outcome, readonly [Key, Key | null]>> = {
@@ -261,25 +261,30 @@ export class Hud {
   onRevive: () => Promise<Key | null> = async () => null;
 
   /**
-   * 인피니티의 끝 (§22.3). 실패 시트와 같은 모양 — 화면 아무 곳이나 누르면 새 판.
-   * daily 가 참이면 "오늘 최고" 로 적는다
+   * 인피니티의 끝 (§22.3). 가운데에 큰 판으로 — 점수를 크게, 그 아래 버틴 시간·스침·콤보.
+   * 판 밖을 눌러도 새 판(이어하기가 있거나 클리어면 버튼으로만). daily 가 참이면 "오늘 최고" 로 적는다
    */
   showInfinityResult(
-    sec: number, best: number, isBest: boolean, daily = false, revive: 'free' | 'ad' | null = null,
+    sec: number, score: number, best: number, isBest: boolean, daily = false, revive: 'free' | 'ad' | null = null,
     info: { grazes: number; combo: number; code: string | null; cleared: boolean } = { grazes: 0, combo: 0, code: null, cleared: false },
   ): void {
     if (!this.result.hidden) return;
-    this.result.className = info.cleared ? 'sheet win' : 'sheet lose';
+    this.result.className = info.cleared ? 'sheet win inf' : 'sheet lose inf';
     this.result.dataset['hold'] = revive || info.cleared ? '1' : '';
     // 이어하기(§14.7)는 판마다 한 번. 광고가 없는 빌드는 그냥 잇고, 광고를 못 불러오면 버튼이 없다
     const reviveBtn = revive
       ? `<button class="btn next" data-a="revive" type="button">${t(revive === 'ad' ? 'inf.reviveAd' : 'inf.revive')}</button>`
       : '';
+    const stat = (label: Key, value: string): string =>
+      `<div class="stat"><b>${value}</b><span>${t(label)}</span></div>`;
     this.result.innerHTML = `<div class="panel">
       <div class="head">${img(rabbitIcon(isBest || info.cleared ? 'win' : 'sad'))}<h2></h2></div>
-      <p class="msg"></p>
-      ${IS_TOSS ? `<p class="tapnote">${t('inf.score', { n: tossScore(sec, info.grazes) })}</p>` : ''}
-      <p class="tapnote">${t('inf.statsGraze', { g: info.grazes, c: info.combo })}${info.code ? ` · ${t('inf.code', { code: info.code })}` : ''}</p>
+      <div class="score"><b>${t('inf.points', { n: score.toLocaleString('en-US') })}</b>
+        <span>${isBest ? t(daily ? 'inf.newBestDaily' : 'inf.newBest')
+          : t(daily ? 'inf.bestDaily' : 'inf.bestScore', { n: best.toLocaleString('en-US') })}</span></div>
+      <div class="stats">${stat('inf.statTime', t('inf.secs', { sec: sec.toFixed(1) }))}${
+        stat('inf.statGraze', String(info.grazes))}${stat('inf.statCombo', `×${info.combo}`)}</div>
+      ${info.code ? `<p class="tapnote">${t('inf.code', { code: info.code })}</p>` : ''}
       <div class="row">${info.cleared ? '' : reviveBtn}
         <button class="btn primary" data-a="retry" type="button">${t('result.retry')}</button>
         ${IS_TOSS
@@ -287,13 +292,9 @@ export class Hud {
           : `<button class="btn hint" data-a="share" type="button">${t('inf.share')}</button>`}
         <button class="btn" data-a="pick" type="button">${t('picker.toTitle')}</button>
       </div>
-      ${isBest ? `<p class="tapnote">${t(daily ? 'inf.newBestDaily' : 'inf.newBest')}</p>` : ''}
       <p class="tapnote sharenote" hidden></p>
       ${revive || info.cleared ? '' : `<p class="tapnote">${t('result.tapRetry')}</p>`}</div>`;
     this.result.querySelector('h2')!.textContent = t(info.cleared ? 'inf.cleared' : 'inf.over');
-    this.result.querySelector('.msg')!.textContent = info.cleared
-      ? t('inf.clearStats', { g: info.grazes })
-      : t(daily ? 'inf.statsDaily' : 'inf.stats', { sec: sec.toFixed(1), best: best.toFixed(1) });
     const note = this.result.querySelector<HTMLElement>('.sharenote')!;
     for (const b of this.result.querySelectorAll<HTMLButtonElement>('button')) {
       b.addEventListener('click', () => {

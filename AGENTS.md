@@ -64,7 +64,7 @@ npm run check     tsc + core/ 의 DOM 사용 검사
 npm run build     타입 검사 후 dist/ 생성
 npm run build:itch  itch.io 업로드 zip (광고 없는 힌트, 서비스 워커 없음) — store/itch/README.md
 npm run build:toss  앱인토스 번들 .ait (게임센터 순위표, X 버튼 여백) — PLAN §15.7
-npm run build:android  구글 플레이 .aab (Capacitor, 세로 고정). SDK 가 없으면 android/ 준비까지 — .aab 는 Actions "안드로이드 빌드" (§15.2)
+npm run build:android  구글 플레이 .aab + 원스토어 .apk (Capacitor, 세로 고정). SDK 가 없으면 android/ 준비까지 — .aab 는 Actions "안드로이드 빌드" (§15.2)
 npm run solve     전 각도 스캔 (§16.1)
 npm run bench     성능 측정 (§8.9) — 1-1 0.061초 / 5-1 0.517초
 npm run preview   빌드 결과 서빙. **배포 전 확인은 dev 가 아니라 이것으로**
@@ -218,6 +218,7 @@ Settings → Pages → Source 는 **"GitHub Actions"** 로 되어 있다 (확인
 - [x] **v0.6.2 곡·문구** (2026-11-01) — 비행 곡을 타이틀 곡으로, 보스전은 옛 비행 곡, 최종 보스만 boss 곡. "인피니티" → "시작하기"(공유·도감·도움말 문구도). **네 언어 브라우저 확인함**
 - [x] **v0.7.0 앱인토스 빌드** (2026-11-03) — `npm run build:toss`, 순위표·X 버튼 여백·뒤로 가기 닫기. 토스앱 실기기 테스트·등급분류는 남음 (§15.7). **브라우저에서 결과 [순위]·설정·여백 확인함**
 - [x] **v0.7.1 안드로이드 빌드** (2026-11-03) — `npm run build:android`·Actions 워크플로로 .aab, 뒤로 가기·세로 고정·아이콘. 플레이 계정·업로드 키·실기기 확인은 남음 (§15.2)
+- [x] **v0.8.0 튜토리얼·결과 판** (2026-11-10) — 첫 시작 튜토리얼 여섯 장(다음부터 안 보기·도움말에서 다시 보기), 결과를 가운데 큰 판·점수로(§13.9). 안드로이드 빌드는 원스토어용 .apk 도(§15.2). **폰·PC 크기, 한·영으로 브라우저 확인함**
 - [ ] **M12** 스토어 출시 — Capacitor 앱 셸, AdMob, 서명, 심사 (계정 대기 중)
 
 테스트 302개. 게임은 인피니티만(단계 35개는 데모·검증용으로 저장소에 남음). 빌드 gzip JS 71KB + CSS 4.4KB + 글꼴 87KB(네 언어 합계) (§18 예산 안).

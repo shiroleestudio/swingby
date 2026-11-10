@@ -64,6 +64,9 @@ export const HELP_KEYS: readonly HelpKey[] = [
   'aim', 'turn', 'planet', 'rock', 'hole', 'ufo', 'orbit', 'dock', 'carrot', 'graze', 'levelup', 'boss',
 ];
 
+/** 처음 시작할 때 넘겨 보는 튜토리얼의 순서 (§13.9): 조작 둘 → 점수가 되는 것 → 구조 */
+export const TUTORIAL_KEYS: readonly HelpKey[] = ['aim', 'turn', 'carrot', 'graze', 'levelup', 'boss'];
+
 export function helpFor(key: HelpKey): { title: string; body: string } {
   if (key in TEXT) return introFor('', key as IntroKey);
   const [title, body] = HELP_TEXT[key as Exclude<HelpKey, IntroKey>];

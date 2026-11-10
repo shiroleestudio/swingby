@@ -5,7 +5,7 @@
 // 화면은 전부 DOM 오버레이다. 캔버스는 뒤에서 계속 돌고,
 // 타이틀에서는 그 캔버스가 데모를 재생한다 (§13.1).
 
-import { HELP_KEYS, helpFor, introFor, seenKey } from './intro.js';
+import { HELP_KEYS, TUTORIAL_KEYS, helpFor, introFor, seenKey } from './intro.js';
 import { LANGS, LANG_NAME, type Key, type LangSetting, t } from '../i18n/index.js';
 import { helpArt, img, introArt, messierIcon } from './art.js';
 import { MESSIER, MESSIER_COUNT } from '../tools-shared/messier.js';
@@ -206,8 +206,9 @@ export class Screens {
         <div class="spacer"></div></div>
       <h2>${t('help.title')}</h2>
       <p class="catnote">${t('help.intro')}</p>
+      <button class="btn tutbtn" data-a="tut" type="button">${t('tut.replay')}</button>
       <div class="hcells">${cells}</div>`;
-    this.bind(this.catalogEl, { back: () => this.showTitle() });
+    this.bind(this.catalogEl, { back: () => this.showTitle(), tut: () => this.showTutorial() });
     for (const c of this.catalogEl.querySelectorAll<HTMLButtonElement>('.hcell')) {
       c.addEventListener('click', () => this.showHelpCard(c.dataset['k'] as HelpKey));
     }
@@ -237,6 +238,8 @@ export class Screens {
     if (!key) return false;
     const mark = seenKey(L.id, key);
     if (seen.includes(mark)) return false;
+    // 인피니티는 카드 한 장이 아니라 여러 장짜리 튜토리얼 (§13.9). "다음부터 안 보기"를 켠 채 닫아야 본 것으로 친다
+    if (key === 'infinity') { this.showTutorial((dontShow) => { if (dontShow) onSeen(mark); }); return true; }
     this.showIntroCard(L.id, key);
     onSeen(mark);
     return true;
@@ -251,6 +254,40 @@ export class Screens {
       <h2>${title}</h2><p>${body}</p>
       <button class="btn primary" data-a="ok" type="button">${t('intro.ok')}</button></div>`;
     this.bind(this.introEl, { ok: () => { this.introEl.hidden = true; } });
+    this.introEl.hidden = false;
+  }
+
+  // ── §13.9 튜토리얼 ────────────────────────────────────────────────────
+  /**
+   * 도움말 카드 여섯 장을 차례로 넘겨 본다. 처음 시작할 때(onDone 있음)는 "다음부터 안 보기"
+   * 체크 칸이 있고, 닫을 때 그 값을 돌려준다. 도움말에서 다시 볼 때(onDone 없음)는 도움말로 돌아간다.
+   */
+  showTutorial(onDone?: (dontShow: boolean) => void, page = 0, dontShow = true): void {
+    const key = TUTORIAL_KEYS[page]!;
+    const { title, body } = helpFor(key);
+    const last = page === TUTORIAL_KEYS.length - 1;
+    this.introBack = onDone ? null : 'help';
+    if (!onDone) this.catalogEl.hidden = true;
+    this.introEl.className = 'sheet';
+    this.introEl.innerHTML = `<div class="panel tut">
+      <div class="art">${img(helpArt(key), title)}</div>
+      <h2>${title}</h2><p>${body}</p>
+      <p class="dim page">${t('tut.page', { i: page + 1, n: TUTORIAL_KEYS.length })}</p>
+      <div class="row">
+        ${page > 0 ? `<button class="btn" data-a="prev" type="button">${t('tut.prev')}</button>` : ''}
+        <button class="btn primary" data-a="next" type="button">${t(last ? (onDone ? 'tut.start' : 'cat.close') : 'tut.next')}</button>
+      </div>
+      ${onDone ? `<label class="check"><input type="checkbox"${dontShow ? ' checked' : ''}><span>${t('tut.dontShow')}</span></label>` : ''}</div>`;
+    const checked = (): boolean => this.introEl.querySelector<HTMLInputElement>('.check input')?.checked ?? dontShow;
+    this.bind(this.introEl, {
+      prev: () => this.showTutorial(onDone, page - 1, checked()),
+      next: () => {
+        if (!last) { this.showTutorial(onDone, page + 1, checked()); return; }
+        const v = checked();
+        this.introEl.hidden = true;
+        if (onDone) onDone(v); else this.showHelp();
+      },
+    });
     this.introEl.hidden = false;
   }
 
