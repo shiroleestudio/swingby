@@ -124,7 +124,6 @@ const TEST_TURNS = Math.min(9, Math.max(0, Math.floor(Number(PARAMS.get('turns')
  * `?open`: 첫 실행에도 타이틀부터(바로 인피니티로 가지 않는다). 스테이지가 있던 때는 모든 장·단계를 열었다(§22.9).
  * `?open&turns=3` 처럼 함께 쓸 수 있다.
  */
-const TEST_OPEN = PARAMS.has('open');
 
 const screens = new Screens({
   settings: save.data.settings,
@@ -1088,9 +1087,8 @@ if (import.meta.env.DEV) {
 document.documentElement.style.setProperty('--stars', `url(${toDataUrl(starTile(3, 192, 192))})`);
 
 resize();
-// 스테이지는 2026-10-31 에 뺐다(§22.9) — 처음 온 사람(인피니티 소개 카드를 본 적 없음)은 바로 무작위 우주.
-// 웹 포털·토스는 첫 몇 초에 판단한다 (§13.1)
-if (!save.data.seen_intros.includes('infinity') && !TEST_OPEN) startInfinity('random'); else startDemo();
+// 늘 타이틀부터 (사용자 결정 2026-11-10, §22.9). 처음 온 사람은 [시작하기]를 누르면 튜토리얼이 뜬다 (§13.9)
+startDemo();
 requestAnimationFrame(frame);
 
 // 토스 빌드: 상단 X 버튼과 노치를 피해 화면을 내린다 (§15.7). 여백이 바뀌면 캔버스 여백도 다시 잰다
