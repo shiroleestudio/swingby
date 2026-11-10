@@ -1,5 +1,6 @@
 # CHANGELOG
 
+- v0.7.2 (2026-11-10): 웹판 주소를 자체 도메인 https://spacesurfer.shiroleestudio.com 으로(Settings → Pages 에 입력). 설정의 개인정보처리방침 링크와 문서 주소를 shiroleestudio.com 으로. 게임 내용은 그대로.
 - v0.7.1 (2026-11-03): 구글 플레이용 안드로이드 앱 빌드(`npm run build:android` → .aab, GitHub Actions "안드로이드 빌드"). 앱 ID com.shiroleestudio.swingby, 세로 고정, 안드로이드 뒤로 가기(타이틀에서 누르면 닫힘), 아이콘·스플래시는 게임 스프라이트로, 설정의 오픈소스 고지에 Capacitor(앱)·앱인토스 SDK(토스). 광고는 아직 없음. 웹·itch·토스는 그대로.
 - v0.7.0 (2026-11-03): 앱인토스 빌드(`npm run build:toss` → .ait). 토스 게임센터 순위표에 점수(버틴 초×10 + 스침×10) 기록, 결과 화면 [순위], 토스 X 버튼·노치 여백, 타이틀에서 뒤로 가기로 닫기. 웹·itch 는 그대로.
 - v0.6.2 (2026-11-01): 타이틀 곡(calm)을 비행 중에도 그대로, 보스전은 옛 비행 곡(drive), 15분 최종 보스만 boss 곡. 타이틀 버튼 "인피니티" → "시작하기", 공유 문구·도감·도움말에서도 "인피니티"라는 말을 뺌.

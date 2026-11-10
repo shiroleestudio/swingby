@@ -110,7 +110,7 @@ npm run survive -- --seeds=60   인피니티 자동 조종 생존 측정 (§22.4
 Settings → Pages → Source 는 **"GitHub Actions"** 로 되어 있다 (확인함).
 "Deploy from a branch" 로 바뀌면 GitHub 이 빌드하지 않은 소스를 Jekyll 로 그대로 올려
 (`/src/main.ts` 를 부르는 `index.html`) **빈 화면이 된다.** 한 번 그렇게 된 적이 있다.
-주소: `https://shiroleestudio.github.io/swingby/` (저장소 shiroleestudio/swingby. 옛 주소 dooholee96-code.github.io/swingbypuzzle 은 개인 계정의 리다이렉트 저장소가 넘겨준다)
+주소: `https://spacesurfer.shiroleestudio.com/` (저장소 shiroleestudio/swingby. Actions 배포라 `CNAME` 파일이 아니라 Settings → Pages → Custom domain 에 적은 값이 주소를 정한다. 옛 주소 shiroleestudio.github.io/swingby/ 는 GitHub 이, dooholee96-code.github.io/swingbypuzzle 은 개인 계정의 리다이렉트 저장소가 넘겨준다. 도메인·DNS 는 허브 저장소의 `STUDIO.md`)
 
 기본 브랜치는 **`main`** 이다. 배포는 기본 브랜치에서만 된다 — 워크플로
 조건 때문만이 아니라 GitHub Pages 의 `github-pages` 환경이 기본 브랜치의
