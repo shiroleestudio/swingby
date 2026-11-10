@@ -77,7 +77,7 @@ export class Hud {
 
   constructor() {
     this.retry.addEventListener('click', () => this.onRetryTop());
-    this.back.addEventListener('click', () => this.onOpenPicker());
+    this.back.addEventListener('click', () => this.onBackTop());
     // 실패 결과는 화면 아무 곳이나 탭해도 재시도 (§13.4). **성공에는 걸지 않는다** —
     // 궤적을 보려고 탭했다가 단계가 다시 시작되면 "다음 단계" 를 잃는다
     this.result.addEventListener('pointerdown', (e) => {
@@ -257,6 +257,8 @@ export class Hud {
 
   /** 위쪽 [다시] 단추. 날고 있는 판이면 main 이 먼저 묻는다 (§13.9) */
   onRetryTop: () => void = () => this.onRetry();
+  /** 위 [타이틀] 버튼. main 이 그만두기 확인(§13.9)을 끼운다 */
+  onBackTop: () => void = () => this.onOpenPicker();
   /** [공유] (§22.3). 끝나면 보여 줄 안내 문구의 키, 없으면 null */
   onShare: () => Promise<Key | null> = async () => null;
   /** 이어하기 (§14.7). 이었으면 null, 못 이었으면 보일 안내 문구의 키 */
